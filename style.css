@@ -249,41 +249,30 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
 }
 .stat-desc    { font-size: 0.82rem; color: rgba(255,255,255,.5); font-weight: 300; margin-top: 3px; }
 
-.hero-badge {
-  margin-top: 32px;
-  display: inline-flex; align-items: center; gap: 9px;
-  background: rgba(200,168,75,.12);
-  border: 1px solid rgba(200,168,75,.25);
-  border-radius: 2px; padding: 10px 16px; position: relative; z-index: 1;
+.feeder-callout {
+  margin-top: 28px;
+  display: flex; align-items: flex-start; gap: 14px;
+  background: rgba(200,168,75,.10);
+  border: 1px solid rgba(200,168,75,.3);
+  border-left: 3px solid var(--gold);
+  border-radius: 3px; padding: 18px 20px;
+  position: relative; z-index: 1;
 }
-.hero-badge-icon { font-size: 1rem; }
-.hero-badge-text {
+.feeder-callout-eagle { font-size: 1.6rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+.feeder-callout-body  { display: flex; flex-direction: column; gap: 3px; }
+.feeder-callout-title {
   font-family: 'Oswald', sans-serif;
-  font-weight: 500; font-size: 0.72rem; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--gold-lt); line-height: 1.3;
+  font-weight: 600; font-size: 0.82rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gold); line-height: 1.2;
 }
-
-/* ── TICKER ── */
-.ticker {
-  background: var(--navy); padding: 0; overflow: hidden;
-  border-top: 1px solid rgba(255,255,255,.05);
-}
-.ticker-inner {
-  display: inline-flex; align-items: center;
-  animation: scroll 30s linear infinite;
-  white-space: nowrap; padding: 13px 0;
-}
-.ticker-item {
+.feeder-callout-sub {
   font-family: 'Oswald', sans-serif;
-  font-weight: 500; font-size: 0.78rem; letter-spacing: 0.12em;
-  text-transform: uppercase; color: rgba(255,255,255,.65); padding: 0 36px;
+  font-weight: 500; font-size: 1rem; color: var(--white);
+  letter-spacing: 0.03em;
 }
-.ticker-item .hi { color: var(--gold); }
-.ticker-sep { color: rgba(200,168,75,.35); font-size: 0.5rem; }
-
-@keyframes scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+.feeder-callout-desc {
+  font-size: 0.78rem; color: rgba(255,255,255,.55);
+  line-height: 1.5; margin-top: 4px;
 }
 
 /* ── CONTENT SECTIONS ── */
@@ -415,6 +404,16 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   font-weight: 300; font-size: 0.7rem; letter-spacing: 0.16em;
   text-transform: uppercase; color: rgba(255,255,255,.5); margin-top: 6px;
 }
+.team-card-meta {
+  background: var(--sand); padding: 12px 24px;
+  border-top: 1px solid rgba(255,255,255,.06);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.team-card-meta-row {
+  font-size: 0.8rem; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.meta-icon { font-size: 0.75rem; }
 .team-card-bottom {
   background: var(--white); padding: 18px 24px;
   display: flex; flex-wrap: wrap; gap: 6px;
@@ -436,6 +435,115 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   font-size: 0.92rem; color: var(--muted); line-height: 1.65;
 }
 .team-note a { color: var(--navy); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── TROPHY CASE ── */
+.trophy-season {
+  margin-bottom: 72px;
+}
+.trophy-season-header {
+  display: flex; align-items: baseline; gap: 12px;
+  border-bottom: 2px solid var(--navy); padding-bottom: 12px; margin-bottom: 32px;
+}
+.trophy-season-year {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700; font-size: 2rem; color: var(--navy);
+  letter-spacing: -0.01em;
+}
+.trophy-season-label {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 300; font-size: 0.75rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+}
+.trophy-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+/* Trophy list — dynamic blog-style */
+.trophy-list          { display: flex; flex-direction: column; gap: 0; }
+.trophy-state         { color: var(--muted); font-style: italic; font-size: 0.9rem; }
+
+.trophy-post {
+  padding: 40px 0; border-bottom: 1px solid var(--rule);
+}
+.trophy-post:first-child { padding-top: 0; }
+
+.trophy-post-meta {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+.trophy-post-date {
+  font-size: 0.78rem; color: var(--muted); font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.trophy-post-badge {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: 2px;
+}
+.trophy-post-badge--championship    { background: var(--gold);  color: var(--navy); }
+.trophy-post-badge--tournament_win  { background: var(--linen); color: var(--navy); border: 1px solid var(--rule); }
+.trophy-post-badge--state_qualifier { background: var(--navy);  color: var(--white); }
+.trophy-post-badge--milestone       { background: var(--cream); color: var(--muted); border: 1px solid var(--rule); }
+
+.trophy-post-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700; font-size: clamp(1.5rem, 3vw, 2.2rem);
+  color: var(--navy); letter-spacing: -0.01em; line-height: 1.1;
+  margin-bottom: 6px;
+}
+.trophy-post-team {
+  font-size: 0.85rem; color: var(--muted); margin-bottom: 14px;
+  font-family: 'Oswald', sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.trophy-post-desc  { font-size: 0.95rem; line-height: 1.7; color: var(--ink); max-width: 680px; }
+.trophy-post-photo {
+  margin-top: 20px; width: 100%; max-width: 640px;
+  border-radius: 4px; display: block;
+}
+
+/* ── ADMIN ── */
+.admin-gate-wrap {
+  max-width: 420px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.admin-gate-label {
+  font-family: 'Oswald', sans-serif; font-size: 0.78rem;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+}
+.admin-gate-row   { display: flex; gap: 12px; }
+.admin-pw-input   { flex: 1; }
+.admin-pw-error   { font-size: 0.82rem; color: #c0392b; }
+.admin-pw-error--hidden   { display: none; }
+.admin-dashboard--hidden  { display: none; }
+.admin-section-heading    { font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 32px; }
+
+.admin-form       { max-width: 800px; display: flex; flex-direction: column; gap: 0; }
+.admin-two-col    { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+
+.label-optional   { font-weight: 300; color: var(--muted); }
+
+.admin-posts-list { display: flex; flex-direction: column; gap: 0; }
+.admin-state      { color: var(--muted); font-style: italic; font-size: 0.9rem; }
+
+.admin-post-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--rule); gap: 16px;
+}
+.admin-post-info       { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.admin-post-date       { font-size: 0.75rem; color: var(--muted); font-family: 'Oswald', sans-serif; letter-spacing: 0.08em; }
+.admin-post-title-text { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 0.95rem; color: var(--navy); }
+.admin-post-team       { font-size: 0.78rem; color: var(--muted); }
+
+.admin-delete-btn {
+  flex-shrink: 0;
+  background: none; border: 1px solid #c0392b; color: #c0392b;
+  font-family: 'Oswald', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 5px 12px; border-radius: 2px; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.admin-delete-btn:hover { background: #c0392b; color: var(--white); }
+
+.footer-admin-link { color: var(--muted); text-decoration: none; opacity: 0.5; }
+.footer-admin-link:hover { opacity: 1; }
 
 /* ── GALLERY ── */
 .gallery-grid {
