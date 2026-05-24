@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A-Town Hoops · Arlington, WA</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       NAV
+  ══════════════════════════════════════════ -->
+  <nav id="main-nav">
+    <a href="#" class="nav-logo" onclick="showPage('home'); return false;">
+      <span class="nav-logo-main">A-Town</span>
+      <span class="nav-logo-dot">·</span>
+      <span class="nav-logo-sub">Hoops</span>
+    </a>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#" onclick="showPage('home');  return false;" id="nav-home"    class="active">Home</a></li>
+      <li><a href="#" onclick="showPage('about'); return false;" id="nav-about"          >About</a></li>
+      <li><a href="#" onclick="showPage('teams'); return false;" id="nav-teams"          >Teams</a></li>
+      <li><a href="#" onclick="showPage('gallery');return false;" id="nav-gallery"       >Gallery</a></li>
+      <li><a href="#" onclick="showPage('contact');return false;" id="nav-contact"       >Contact</a></li>
+      <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" class="nav-register">Register</a></li>
+    </ul>
+
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════
+       HOME PAGE
+  ══════════════════════════════════════════ -->
+  <div id="page-home" class="page active">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-kicker">
+          <div class="hero-kicker-line"></div>
+          <div class="hero-kicker-text">Arlington, Washington · Non-Profit</div>
+        </div>
+        <h1>
+          A-Town Hoops
+        </h1>
+        <p class="hero-body">
+          Community basketball for Arlington youth — from first-time players to future Eagles.
+          Boys and girls programs, all volunteer-run.
+        </p>
+        <div class="hero-ctas">
+          <a href="#" class="btn-solid" onclick="showPage('about'); return false;">Learn About Us</a>
+          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" class="btn-ghost">Register for Tryouts</a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-right-label">Program at a Glance</div>
+        <div class="stat-stack">
+          <div class="stat-row">
+            <div class="stat-number">150+</div>
+            <div class="stat-desc">Athletes Last Season</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-number">100%</div>
+            <div class="stat-desc">Volunteer Coaches &amp; Board</div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-number">2</div>
+            <div class="stat-desc">Programs — Boys &amp; Girls</div>
+          </div>
+        </div>
+        <div class="hero-badge">
+          <div class="hero-badge-icon">🦅</div>
+          <div class="hero-badge-text">AAU Feeder Program<br>for Arlington High School</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ticker -->
+    <div class="ticker">
+      <div class="ticker-inner">
+        <span class="ticker-item">🏆 <span class="hi">7th Grade</span> Wesco Fall Classic Champions — State Bound</span>
+        <span class="ticker-sep">◆</span>
+        <span class="ticker-item">🥇 <span class="hi">6th Grade</span> Fall Classic Champions — State Bound</span>
+        <span class="ticker-sep">◆</span>
+        <span class="ticker-item">🎫 <span class="hi">5th Grade</span> Wesco — Punched Ticket to State</span>
+        <span class="ticker-sep">◆</span>
+        <span class="ticker-item">A-Town Hoops · Arlington, Washington</span>
+        <span class="ticker-sep">◆</span>
+        <!-- Duplicate set for seamless loop -->
+        <span class="ticker-item">🏆 <span class="hi">7th Grade</span> Wesco Fall Classic Champions — State Bound</span>
+        <span class="ticker-sep">◆</span>
+        <span class="ticker-item">🥇 <span class="hi">6th Grade</span> Fall Classic Champions — State Bound</span>
+        <span class="ticker-sep">◆</span>
+        <span class="ticker-item">🎫 <span class="hi">5th Grade</span> Wesco — Punched Ticket to State</span>
+        <span class="ticker-sep">◆</span>
+        <span class="ticker-item">A-Town Hoops · Arlington, Washington</span>
+        <span class="ticker-sep">◆</span>
+      </div>
+    </div>
+
+    <!-- What We Do -->
+    <div class="content-section">
+      <div class="eyebrow">What We Do</div>
+      <h2 class="display">Built for<br>Arlington.</h2>
+      <div class="pillars">
+        <div class="pillar-item">
+          <div class="pillar-num">01</div>
+          <h3>Skill Development</h3>
+          <p>Fundamental instruction for every level — from first-timers to competitive players looking to sharpen their game before high school.</p>
+        </div>
+        <div class="pillar-item">
+          <div class="pillar-num">02</div>
+          <h3>Open to Everyone</h3>
+          <p>We believe basketball should be accessible to all. A-Town is a not-for-profit — all coaches and board members are volunteers from the community.</p>
+        </div>
+        <div class="pillar-item">
+          <div class="pillar-num">03</div>
+          <h3>Eagles Pipeline</h3>
+          <p>As the official AAU feeder for Arlington High School, we coordinate directly with Eagles coaches to give athletes the best path to varsity.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Wins -->
+    <div class="content-section sand" style="padding-top: 72px; padding-bottom: 72px;">
+      <div class="eyebrow">25–26 Season</div>
+      <h2 class="display">Recent Wins.</h2>
+      <div class="wins-row">
+        <div class="win-cell">
+          <div class="win-trophy">🏆</div>
+          <div class="win-title">7th Grade Wesco Fall Classic</div>
+          <div class="win-sub">Champions — Punched ticket to state</div>
+        </div>
+        <div class="win-cell">
+          <div class="win-trophy">🥇</div>
+          <div class="win-title">6th Grade Fall Classic</div>
+          <div class="win-sub">Champions — Heading to state</div>
+        </div>
+        <div class="win-cell">
+          <div class="win-trophy">🎫</div>
+          <div class="win-title">5th Grade Wesco</div>
+          <div class="win-sub">State bound this season</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Band -->
+    <div class="cta-band">
+      <h2>Ready to Join?</h2>
+      <p>Tryouts open for boys and girls programs. Register before you come out.</p>
+      <div class="cta-band-btns">
+        <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" class="btn-gold">Register for Tryouts</a>
+        <a href="#" class="btn-ghost-lt" onclick="showPage('contact'); return false;">Ask a Question</a>
+      </div>
+    </div>
+
+  </div><!-- /page-home -->
+
+
+  <!-- ══════════════════════════════════════════
+       ABOUT PAGE
+  ══════════════════════════════════════════ -->
+  <div id="page-about" class="page">
+
+    <div class="page-header">
+      <div class="eyebrow">Our Story</div>
+      <h1 class="display">About<br>A-Town Hoops.</h1>
+    </div>
+
+    <div class="content-section">
+      <div class="two-col wide">
+        <div>
+          <span class="rule-gold"></span>
+          <h2 class="display" style="font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 24px;">
+            Basketball for<br>Everyone.
+          </h2>
+          <p class="lead" style="margin-bottom: 20px;">
+            A-Town Hoops is a not-for-profit basketball organization in Arlington, Washington.
+            We provide quality instruction and believe the game should be accessible to every kid who wants to play.
+          </p>
+          <p class="lead" style="margin-bottom: 20px;">
+            We supported over <strong style="color: var(--navy);">150 athletes</strong> last season through our
+            AAU and SWISH programs — and we're growing every year.
+          </p>
+          <p class="lead">
+            Whether you're picking up a basketball for the first time or you've been playing for years,
+            A-Town is a place where you can develop your skills, make friends, and fall in love with the game.
+          </p>
+        </div>
+        <div>
+          <div class="about-card">
+            <div class="about-card-tag">Our Mission</div>
+            <div class="about-card-quote">"Basketball should be accessible to everyone in Arlington."</div>
+            <div class="about-card-body">
+              We build an environment where any kid — experienced or brand new — can learn the game,
+              have fun, and build relationships that carry beyond the court.
+              All coaches and board members give their time as volunteers.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section cream">
+      <div class="eyebrow">Leadership</div>
+      <h2 class="display" style="font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 10px;">The Board.</h2>
+      <p class="lead">Every person below donates their time to make A-Town Hoops possible.</p>
+      <div class="board-grid">
+        <div class="board-cell"><div class="board-role">President</div><div class="board-name">Sean Marsh</div></div>
+        <div class="board-cell"><div class="board-role">Girls Director</div><div class="board-name">Tyler Thomas</div></div>
+        <div class="board-cell"><div class="board-role">Boys Director</div><div class="board-name">Aaron Carlson</div></div>
+        <div class="board-cell"><div class="board-role">Treasurer</div><div class="board-name">Sarah Nobach</div></div>
+        <div class="board-cell"><div class="board-role">Secretary / Digital Comm.</div><div class="board-name">Becka Ostrom</div></div>
+        <div class="board-cell"><div class="board-role">Scheduling Coordinator</div><div class="board-name">Jammie &amp; Ethan Shull</div></div>
+        <div class="board-cell"><div class="board-role">HS Girls Liaison</div><div class="board-name">Lauryn Perrigo</div></div>
+        <div class="board-cell"><div class="board-role">HS Boys Liaison</div><div class="board-name">Drew Bryson</div></div>
+      </div>
+    </div>
+
+  </div><!-- /page-about -->
+
+
+  <!-- ══════════════════════════════════════════
+       TEAMS PAGE
+  ══════════════════════════════════════════ -->
+  <div id="page-teams" class="page">
+
+    <div class="teams-header-section">
+      <div class="eyebrow">25–26 Season</div>
+      <h1 class="display">Our Teams.</h1>
+      <p class="lead" style="margin-top: 18px;">Competitive AAU basketball for Arlington youth across multiple grade levels.</p>
+      <div class="team-tabs">
+        <button class="team-tab active" onclick="switchTeam('boys', this)">Boys Program</button>
+        <button class="team-tab"        onclick="switchTeam('girls', this)">Girls Program</button>
+      </div>
+    </div>
+
+    <div class="content-section teams-body-section">
+
+      <!-- Boys Panel -->
+      <div id="panel-boys" class="team-panel active">
+        <div class="eyebrow">Boys Basketball</div>
+        <h2 class="display" style="font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 10px;">A-Town Boys<br>25–26.</h2>
+        <p class="lead">A championship season across the board — multiple teams punching tickets to state.</p>
+
+        <div class="team-cards">
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">5th <span>Grade</span></div>
+              <div class="team-card-label">Boys Basketball</div>
+            </div>
+            <div class="team-card-bottom">
+              <span class="chip gold">🎫 State Bound</span>
+              <span class="chip">Wesco</span>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">6th <span>Grade</span></div>
+              <div class="team-card-label">Boys Basketball</div>
+            </div>
+            <div class="team-card-bottom">
+              <span class="chip gold">🏆 Fall Classic Champs</span>
+              <span class="chip">State Bound</span>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">7th <span>Grade</span></div>
+              <div class="team-card-label">Boys Basketball</div>
+            </div>
+            <div class="team-card-bottom">
+              <span class="chip gold">🏆 Wesco Champs</span>
+              <span class="chip">State Bound</span>
+            </div>
+          </div>
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">8th <span>Grade</span></div>
+              <div class="team-card-label">Boys Basketball</div>
+            </div>
+            <div class="team-card-bottom">
+              <span class="chip">AAU</span>
+              <span class="chip">Wesco</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="team-note">
+          <strong>Tryout Registration:</strong> Complete the form before attending tryouts.
+          &nbsp;<a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank">Register here →</a>
+        </div>
+      </div><!-- /panel-boys -->
+
+      <!-- Girls Panel -->
+      <div id="panel-girls" class="team-panel">
+        <div class="eyebrow">Girls Basketball</div>
+        <h2 class="display" style="font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 10px;">A-Town Girls<br>25–26.</h2>
+        <p class="lead">A dedicated girls program with experienced coaching and competitive league play.</p>
+
+        <div class="team-cards">
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">5th <span>Grade</span></div>
+              <div class="team-card-label">Girls Basketball</div>
+            </div>
+            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
+          </div>
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">6th <span>Grade</span></div>
+              <div class="team-card-label">Girls Basketball</div>
+            </div>
+            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
+          </div>
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">7th <span>Grade</span></div>
+              <div class="team-card-label">Girls Basketball</div>
+            </div>
+            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
+          </div>
+          <div class="team-card">
+            <div class="team-card-top">
+              <div class="team-card-grade">8th <span>Grade</span></div>
+              <div class="team-card-label">Girls Basketball</div>
+            </div>
+            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
+          </div>
+        </div>
+
+        <div class="team-note">
+          <strong>Girls Program Info:</strong> For tryout details,
+          <a href="#" onclick="showPage('contact'); return false;">contact us</a> or
+          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank">fill out the pre-tryout form →</a>
+        </div>
+      </div><!-- /panel-girls -->
+
+    </div>
+  </div><!-- /page-teams -->
+
+
+  <!-- ══════════════════════════════════════════
+       GALLERY PAGE
+  ══════════════════════════════════════════ -->
+  <div id="page-gallery" class="page">
+
+    <div class="page-header">
+      <div class="eyebrow">A-Town in Action</div>
+      <h1 class="display">Gallery.</h1>
+      <p class="lead" style="margin-top: 16px;">Moments from the court — tournaments, practices, and championship celebrations.</p>
+    </div>
+
+    <div class="content-section">
+      <div class="gallery-grid">
+        <div class="g-item">
+          <div class="g-placeholder">
+            <div class="g-placeholder-icon">🏀</div>
+            <div class="g-placeholder-txt">Team Photo</div>
+          </div>
+          <div class="g-over"><span>⊕</span></div>
+        </div>
+        <div class="g-item">
+          <div class="g-placeholder">
+            <div class="g-placeholder-icon">🏆</div>
+            <div class="g-placeholder-txt">Tournament</div>
+          </div>
+          <div class="g-over"><span>⊕</span></div>
+        </div>
+        <div class="g-item">
+          <div class="g-placeholder">
+            <div class="g-placeholder-icon">🎯</div>
+            <div class="g-placeholder-txt">Practice</div>
+          </div>
+          <div class="g-over"><span>⊕</span></div>
+        </div>
+        <div class="g-item">
+          <div class="g-placeholder">
+            <div class="g-placeholder-icon">🦅</div>
+            <div class="g-placeholder-txt">Game Action</div>
+          </div>
+          <div class="g-over"><span>⊕</span></div>
+        </div>
+        <div class="g-item">
+          <div class="g-placeholder">
+            <div class="g-placeholder-icon">🎫</div>
+            <div class="g-placeholder-txt">State Celebration</div>
+          </div>
+          <div class="g-over"><span>⊕</span></div>
+        </div>
+      </div>
+      <p class="gallery-note">
+        Have photos from a game or tournament?
+        <a href="#" onclick="showPage('contact'); return false;">Send them our way.</a>
+      </p>
+    </div>
+
+  </div><!-- /page-gallery -->
+
+
+  <!-- ══════════════════════════════════════════
+       CONTACT PAGE
+  ══════════════════════════════════════════ -->
+  <div id="page-contact" class="page">
+
+    <div class="page-header">
+      <div class="eyebrow">Get in Touch</div>
+      <h1 class="display">Contact Us.</h1>
+      <p class="lead" style="margin-top: 16px;">Questions about tryouts, registration, or the program? We'll get back to you quickly.</p>
+    </div>
+
+    <div class="content-section">
+      <div class="contact-grid">
+
+        <div class="contact-details">
+          <span class="rule-gold"></span>
+          <div class="c-item">
+            <div class="c-icon">📍</div>
+            <div>
+              <div class="c-label">Location</div>
+              <div class="c-value">Arlington, Washington, United States</div>
+            </div>
+          </div>
+          <div class="c-item">
+            <div class="c-icon">🏀</div>
+            <div>
+              <div class="c-label">Programs</div>
+              <div class="c-value">Boys AAU · Girls AAU · SWISH Program</div>
+            </div>
+          </div>
+          <div class="c-item">
+            <div class="c-icon">📋</div>
+            <div>
+              <div class="c-label">Tryout Registration</div>
+              <div class="c-value">
+                <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank">Fill out the pre-tryout form →</a>
+              </div>
+            </div>
+          </div>
+          <div class="c-item">
+            <div class="c-icon">🦅</div>
+            <div>
+              <div class="c-label">Affiliation</div>
+              <div class="c-value">AAU Feeder Program for Arlington High School</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-wrap">
+          <div class="form-heading">Send a Message</div>
+          <div class="f-row">
+            <label>Your Name</label>
+            <input type="text" id="cf-name" placeholder="First and last name" />
+          </div>
+          <div class="f-row">
+            <label>Email Address</label>
+            <input type="email" id="cf-email" placeholder="your@email.com" />
+          </div>
+          <div class="f-row">
+            <label>Topic</label>
+            <select id="cf-topic">
+              <option value="">Select a topic…</option>
+              <option>Tryout Registration</option>
+              <option>Boys Program</option>
+              <option>Girls Program</option>
+              <option>Payment / Fees</option>
+              <option>SWISH Program</option>
+              <option>General Question</option>
+            </select>
+          </div>
+          <div class="f-row">
+            <label>Message</label>
+            <textarea id="cf-message" placeholder="How can we help?"></textarea>
+          </div>
+          <button class="f-submit" onclick="submitForm()">Send Message →</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /page-contact -->
+
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">A-Town <span>Hoops</span></div>
+        <p class="footer-desc">
+          A not-for-profit basketball organization in Arlington, Washington.
+          All coaches and board members volunteer their time for Arlington's youth.
+        </p>
+      </div>
+      <div>
+        <div class="footer-col-head">Navigate</div>
+        <ul class="footer-nav">
+          <li><a href="#" onclick="showPage('home');    return false;">Home</a></li>
+          <li><a href="#" onclick="showPage('about');   return false;">About</a></li>
+          <li><a href="#" onclick="showPage('teams');   return false;">Teams</a></li>
+          <li><a href="#" onclick="showPage('gallery'); return false;">Gallery</a></li>
+          <li><a href="#" onclick="showPage('contact'); return false;">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-head">Get Involved</div>
+        <ul class="footer-nav">
+          <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank">Register for Tryouts</a></li>
+          <li><a href="#" onclick="showPage('contact'); return false;">Contact the Board</a></li>
+          <li><a href="#" onclick="showPage('about');   return false;">Meet the Board</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025–2026 A-Town Hoops · Arlington, Washington</div>
+      <div class="footer-tag">Not-For-Profit Organization</div>
+    </div>
+  </footer>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <!-- JavaScript -->
+  <script src="main.js"></script>
+
+</body>
+</html>
