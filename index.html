@@ -34,10 +34,10 @@
       <li><a href="#" onclick="showPage('trophy');  return false;" id="nav-trophy"                    >Trophy Case</a></li>
       <li><a href="#" onclick="showPage('gallery'); return false;" id="nav-gallery"                   >Gallery</a></li>
       <li><a href="#" onclick="showPage('contact'); return false;" id="nav-contact"                   >Contact</a></li>
-      <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="nav-register reg-gated">Register</a></li>
+      <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="nav-register reg-gated reg-form-link">Register</a></li>
     </ul>
 
-    <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="nav-mob-register reg-gated">Register</a>
+    <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="nav-mob-register reg-gated reg-form-link">Register</a>
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -65,7 +65,7 @@
         </p>
         <div class="hero-ctas">
           <a href="#" class="btn-solid" onclick="showPage('about'); return false;">Learn About Us</a>
-          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-ghost reg-gated">Register for Tryouts</a>
+          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-ghost reg-gated reg-form-link">Register for Tryouts</a>
         </div>
       </div>
 
@@ -147,7 +147,7 @@
       <h2>Ready to Join?</h2>
       <p>Tryouts open for boys and girls programs. Register before you come out.</p>
       <div class="cta-band-btns">
-        <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-gold reg-gated">Register for Tryouts</a>
+        <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-gold reg-gated reg-form-link">Register for Tryouts</a>
         <a href="#" class="btn-ghost-lt" onclick="showPage('contact'); return false;">Ask a Question</a>
       </div>
     </div>
@@ -244,7 +244,7 @@
         <div id="boys-cards" class="team-cards"><p class="trophy-state">Loading…</p></div>
         <div class="team-note reg-gated">
           <strong>Tryout Registration:</strong> Complete the form before attending tryouts.
-          &nbsp;<a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener">Register here →</a>
+          &nbsp;<a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="reg-form-link">Register here →</a>
         </div>
       </div><!-- /panel-boys -->
 
@@ -257,7 +257,7 @@
         <div class="team-note reg-gated">
           <strong>Girls Program Info:</strong> For tryout details,
           <a href="#" onclick="showPage('contact'); return false;">contact us</a> or
-          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener">fill out the pre-tryout form →</a>
+          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="reg-form-link">fill out the pre-tryout form →</a>
         </div>
       </div><!-- /panel-girls -->
 
@@ -361,7 +361,7 @@
             <div>
               <div class="c-label">Tryout Registration</div>
               <div class="c-value">
-                <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener">Fill out the pre-tryout form →</a>
+                <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="reg-form-link">Fill out the pre-tryout form →</a>
               </div>
             </div>
           </div>
@@ -643,6 +643,26 @@
 
       <!-- ── SETTINGS ── -->
       <div id="atab-settings" class="admin-panel">
+
+        <!-- Site Settings -->
+        <div class="content-section cream">
+          <div class="eyebrow">Site Settings</div>
+          <h2 class="display admin-section-heading">Links &amp; Contact.</h2>
+          <div class="admin-form">
+            <div class="f-row">
+              <label for="st-reg-url">Registration Form URL</label>
+              <input type="url" id="st-reg-url" placeholder="https://forms.gle/…" />
+            </div>
+            <div class="f-row">
+              <label for="st-contact">Contact Form Endpoint <span class="label-optional">(Formspree URL or email address)</span></label>
+              <input type="text" id="st-contact" placeholder="https://formspree.io/f/… or yourname@email.com" />
+            </div>
+            <p class="st-help">Enter a <strong>Formspree URL</strong> to receive contact form emails without any extra setup, or an <strong>email address</strong> to open the visitor's email client. Leave blank to disable form submissions.</p>
+            <button type="button" class="f-submit" id="st-save-btn" onclick="saveSettings()">Save Settings →</button>
+          </div>
+        </div>
+
+        <!-- Registration Status -->
         <div class="content-section">
           <div class="eyebrow">Settings</div>
           <h2 class="display admin-section-heading">Registration Status.</h2>
@@ -686,8 +706,9 @@
             </div>
             <button type="button" class="f-submit" id="reg-girls-btn" onclick="saveRegistrationStatus('girls')">Save Girls Status →</button>
           </div>
-        </div>
-      </div>
+        </div><!-- /registration content-section -->
+
+      </div><!-- /atab-settings -->
 
     </div><!-- /admin-dashboard -->
 
@@ -720,7 +741,7 @@
       <div>
         <div class="footer-col-head">Get Involved</div>
         <ul class="footer-nav">
-          <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener">Register for Tryouts</a></li>
+          <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="reg-form-link">Register for Tryouts</a></li>
           <li><a href="#" onclick="showPage('contact'); return false;">Contact the Board</a></li>
           <li><a href="#" onclick="showPage('about');   return false;">Meet the Board</a></li>
         </ul>

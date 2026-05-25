@@ -11,7 +11,11 @@ const ADMIN_PASSWORD = 'Atownhoops';
 
 /* ── EDIT STATE ── */
 let _editing = { section: null, id: null };
-const _store  = {}; // id → cached row for edit population
+const _store    = {}; // id → cached row for edit population
+const _settings = {   // loaded from supabase settings table
+  registrationUrl: 'https://forms.gle/YikHHK5KCYW21Gwn7',
+  contactEndpoint: '',
+};
 
 /* ── RICH TEXT EDITORS ── */
 let quillTrophy, quillAnnouncements, quillEvent;
@@ -35,6 +39,39 @@ const SUBMIT_LABELS = {
   trophy: 'Publish Entry →', announcements: 'Publish →', teams: 'Save Team →',
   events: 'Add Event →',    gallery: 'Add Photo →',      board: 'Add Member →',
 };
+
+/* ── SITE SETTINGS ── */
+async function loadSiteSettings() {
+  const { data } = await db.from('settings').select('*');
+  if (!data) return;
+  data.forEach(row => {
+    if (row.key === 'registration_url' && row.value) _settings.registrationUrl = row.value;
+    if (row.key === 'contact_endpoint')              _settings.contactEndpoint  = row.value;
+  });
+  applyRegistrationUrl(_settings.registrationUrl);
+}
+
+function applyRegistrationUrl(url) {
+  if (!url) return;
+  document.querySelectorAll('.reg-form-link').forEach(a => { a.href = url; });
+}
+
+async function saveSettings() {
+  const regUrl   = get('st-reg-url');
+  const contact  = get('st-contact');
+  const btn      = document.getElementById('st-save-btn');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  const results = await Promise.all([
+    db.from('settings').upsert({ key: 'registration_url', value: regUrl  || _settings.registrationUrl }, { onConflict: 'key' }),
+    db.from('settings').upsert({ key: 'contact_endpoint', value: contact }, { onConflict: 'key' }),
+  ]);
+  btn.textContent = 'Save Settings →'; btn.disabled = false;
+  const failed = results.find(r => r.error);
+  if (failed) { alert('Error: ' + failed.error.message); return; }
+  if (regUrl) { _settings.registrationUrl = regUrl; applyRegistrationUrl(regUrl); }
+  _settings.contactEndpoint = contact;
+  showToast('✓ Settings saved.');
+}
 
 /* ── PAGE NAVIGATION ── */
 function showPage(id) {
@@ -146,7 +183,7 @@ async function loadRegistrationStatus() {
           ${r.location    ? `<div class="reg-info-row"><span class="reg-info-icon">📍</span>${r.location}</div>` : ''}
           ${r.deadline    ? `<div class="reg-deadline">⚠ Registration Deadline: ${r.deadline}</div>` : ''}
           ${r.notes       ? `<div class="reg-notes">${r.notes}</div>` : ''}
-          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="reg-program-btn">Register for Tryouts →</a>
+          <a href="${_settings.registrationUrl}" target="_blank" rel="noopener" class="reg-program-btn reg-form-link">Register for Tryouts →</a>
         </div>
       </div>`;
   }).join('');
@@ -665,20 +702,30 @@ function renderAdminList(containerId, section, data, rowContentFn, table, reload
 
 /* ── ADMIN SETTINGS ── */
 async function loadAdminSettings() {
-  const { data } = await db.from('registration_status').select('*');
-  if (!data) return;
-  const anyOpen = data.some(r => r.is_open);
-  document.getElementById('reg-master-open').checked = anyOpen;
-  ['boys', 'girls'].forEach(p => {
-    const row = data.find(r => r.program === p);
-    if (!row) return;
-    document.getElementById(`reg-${p}-grades`).value   = row.grades       || '';
-    document.getElementById(`reg-${p}-date`).value     = row.tryout_date  || '';
-    document.getElementById(`reg-${p}-time`).value     = row.tryout_time  || '';
-    document.getElementById(`reg-${p}-location`).value = row.location     || '';
-    document.getElementById(`reg-${p}-deadline`).value = row.deadline     || '';
-    document.getElementById(`reg-${p}-notes`).value    = row.notes        || '';
-  });
+  const [{ data: regData }, { data: siteData }] = await Promise.all([
+    db.from('registration_status').select('*'),
+    db.from('settings').select('*'),
+  ]);
+  if (regData) {
+    const anyOpen = regData.some(r => r.is_open);
+    document.getElementById('reg-master-open').checked = anyOpen;
+    ['boys', 'girls'].forEach(p => {
+      const row = regData.find(r => r.program === p);
+      if (!row) return;
+      document.getElementById(`reg-${p}-grades`).value   = row.grades       || '';
+      document.getElementById(`reg-${p}-date`).value     = row.tryout_date  || '';
+      document.getElementById(`reg-${p}-time`).value     = row.tryout_time  || '';
+      document.getElementById(`reg-${p}-location`).value = row.location     || '';
+      document.getElementById(`reg-${p}-deadline`).value = row.deadline     || '';
+      document.getElementById(`reg-${p}-notes`).value    = row.notes        || '';
+    });
+  }
+  if (siteData) {
+    siteData.forEach(row => {
+      if (row.key === 'registration_url') document.getElementById('st-reg-url').value  = row.value || '';
+      if (row.key === 'contact_endpoint') document.getElementById('st-contact').value  = row.value || '';
+    });
+  }
 }
 
 async function saveMasterToggle() {
@@ -730,13 +777,41 @@ function showToast(msg) {
 }
 
 /* ── CONTACT FORM ── */
-function submitForm() {
+async function submitForm() {
   const name  = document.getElementById('cf-name').value.trim();
   const email = document.getElementById('cf-email').value.trim();
+  const topic = document.getElementById('cf-topic').value;
   const msg   = document.getElementById('cf-message').value.trim();
   if (!name || !email || !msg) { alert('Please fill in your name, email, and message.'); return; }
-  showToast('✓ Message sent — we\'ll be in touch soon.');
-  ['cf-name','cf-email','cf-message','cf-topic'].forEach(id => { document.getElementById(id).value = ''; });
+
+  const ep  = _settings.contactEndpoint;
+  const btn = document.querySelector('#page-contact .f-submit');
+  const clearForm = () => ['cf-name','cf-email','cf-message','cf-topic'].forEach(id => { document.getElementById(id).value = ''; });
+
+  if (ep && ep.startsWith('http')) {
+    btn.textContent = 'Sending…'; btn.disabled = true;
+    try {
+      const res = await fetch(ep, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, email, topic, message: msg }),
+      });
+      btn.textContent = 'Send Message →'; btn.disabled = false;
+      if (res.ok) { showToast('✓ Message sent — we\'ll be in touch soon.'); clearForm(); }
+      else { alert('Your message could not be sent. Please try again or reach out directly.'); }
+    } catch {
+      btn.textContent = 'Send Message →'; btn.disabled = false;
+      alert('Could not connect. Please check your internet and try again.');
+    }
+  } else if (ep && ep.includes('@')) {
+    const sub  = encodeURIComponent(`[A-Town Hoops] ${topic || 'Website Inquiry'} — ${name}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nTopic: ${topic}\n\nMessage:\n${msg}`);
+    window.open(`mailto:${ep}?subject=${sub}&body=${body}`);
+    showToast('Opening your email client…');
+  } else {
+    showToast('✓ Message received — we\'ll be in touch soon.');
+    clearForm();
+  }
 }
 
 /* ── UTILS ── */
@@ -769,5 +844,6 @@ document.addEventListener('click', e => {
 
 /* ── INIT ── */
 initEditors();
+loadSiteSettings();
 loadHomePage();
 loadTeams('boys');
