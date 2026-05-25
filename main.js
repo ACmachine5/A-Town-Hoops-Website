@@ -118,15 +118,28 @@ async function loadRegistrationStatus() {
   const { data } = await db.from('registration_status').select('*');
   if (!data) return;
   const section = document.getElementById('home-reg-section');
-  const chips   = document.getElementById('home-reg-chips');
+  const cards   = document.getElementById('home-reg-cards');
   const open    = data.filter(r => r.is_open);
   if (!open.length) { section.classList.add('section-hidden'); return; }
   section.classList.remove('section-hidden');
-  chips.innerHTML = open.map(r => `
-    <div class="reg-chip">
-      <div class="reg-chip-program">${r.program === 'boys' ? 'Boys' : 'Girls'} Program</div>
-      ${r.details ? `<div class="reg-chip-details">${r.details}</div>` : ''}
-    </div>`).join('');
+  cards.innerHTML = open.map(r => {
+    const label = r.program === 'boys' ? 'Boys' : 'Girls';
+    return `
+      <div class="reg-program-card">
+        <div class="reg-program-card-top">
+          <div class="reg-program-name">${label} <span>Program</span></div>
+          ${r.grades ? `<div class="reg-program-grades">${r.grades}</div>` : ''}
+        </div>
+        <div class="reg-program-body">
+          ${r.tryout_date ? `<div class="reg-info-row"><span class="reg-info-icon">📅</span>${r.tryout_date}</div>` : ''}
+          ${r.tryout_time ? `<div class="reg-info-row"><span class="reg-info-icon">🕐</span>${r.tryout_time}</div>` : ''}
+          ${r.location    ? `<div class="reg-info-row"><span class="reg-info-icon">📍</span>${r.location}</div>` : ''}
+          ${r.deadline    ? `<div class="reg-deadline">⚠ Registration Deadline: ${r.deadline}</div>` : ''}
+          ${r.notes       ? `<div class="reg-notes">${r.notes}</div>` : ''}
+          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="reg-program-btn">Register for Tryouts →</a>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 /* ── SCHEDULE PAGE ── */
@@ -604,21 +617,35 @@ function renderAdminList(containerId, section, data, rowContentFn, table, reload
 async function loadAdminSettings() {
   const { data } = await db.from('registration_status').select('*');
   if (!data) return;
-  const boys  = data.find(r => r.program === 'boys');
-  const girls = data.find(r => r.program === 'girls');
-  if (boys)  { document.getElementById('reg-boys-open').checked = boys.is_open;  document.getElementById('reg-boys-details').value  = boys.details  || ''; }
-  if (girls) { document.getElementById('reg-girls-open').checked = girls.is_open; document.getElementById('reg-girls-details').value = girls.details || ''; }
+  ['boys', 'girls'].forEach(p => {
+    const row = data.find(r => r.program === p);
+    if (!row) return;
+    document.getElementById(`reg-${p}-open`).checked  = row.is_open;
+    document.getElementById(`reg-${p}-grades`).value   = row.grades       || '';
+    document.getElementById(`reg-${p}-date`).value     = row.tryout_date  || '';
+    document.getElementById(`reg-${p}-time`).value     = row.tryout_time  || '';
+    document.getElementById(`reg-${p}-location`).value = row.location     || '';
+    document.getElementById(`reg-${p}-deadline`).value = row.deadline     || '';
+    document.getElementById(`reg-${p}-notes`).value    = row.notes        || '';
+  });
 }
 
 async function saveRegistrationStatus(program) {
-  const isOpen  = document.getElementById(`reg-${program}-open`).checked;
-  const details = document.getElementById(`reg-${program}-details`).value.trim();
-  const btn     = document.getElementById(`reg-${program}-btn`);
+  const p   = program;
+  const btn = document.getElementById(`reg-${p}-btn`);
   btn.textContent = 'Saving…'; btn.disabled = true;
-  const { error } = await db.from('registration_status')
-    .update({ is_open: isOpen, details: details || null, updated_at: new Date().toISOString() })
-    .eq('program', program);
-  btn.textContent = `Save ${program === 'boys' ? 'Boys' : 'Girls'} Status →`;
+  const payload = {
+    is_open:     document.getElementById(`reg-${p}-open`).checked,
+    grades:      get(`reg-${p}-grades`)   || null,
+    tryout_date: get(`reg-${p}-date`)     || null,
+    tryout_time: get(`reg-${p}-time`)     || null,
+    location:    get(`reg-${p}-location`) || null,
+    deadline:    get(`reg-${p}-deadline`) || null,
+    notes:       get(`reg-${p}-notes`)    || null,
+    updated_at:  new Date().toISOString(),
+  };
+  const { error } = await db.from('registration_status').update(payload).eq('program', p);
+  btn.textContent = `Save ${p === 'boys' ? 'Boys' : 'Girls'} Status →`;
   btn.disabled = false;
   if (error) { alert('Error: ' + error.message); return; }
   showToast('✓ Status updated.');

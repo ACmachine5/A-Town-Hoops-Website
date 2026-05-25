@@ -96,12 +96,11 @@
     </div>
 
     <!-- Registration Status (shown when at least one program is open) -->
-    <div id="home-reg-section" class="reg-status-band section-hidden">
-      <div class="reg-status-inner">
-        <div class="reg-status-label">Tryouts Now Open</div>
-        <div id="home-reg-chips" class="reg-chips"></div>
-        <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-solid reg-status-btn">Register Now →</a>
-      </div>
+    <div id="home-reg-section" class="content-section section-hidden">
+      <div class="eyebrow">Registration</div>
+      <h2 class="display">Tryouts Now Open.</h2>
+      <p class="lead reg-intro-text">Spots are limited — register before attending tryouts.</p>
+      <div id="home-reg-cards" class="reg-program-grid"></div>
     </div>
 
     <!-- Announcements (shown when data exists) -->
@@ -651,7 +650,18 @@
               <label for="reg-boys-open">Registration Open</label>
               <input type="checkbox" id="reg-boys-open" />
             </div>
-            <div class="f-row"><label for="reg-boys-details">Details <span class="label-optional">(date, location, time — shown in the banner)</span></label><input type="text" id="reg-boys-details" placeholder="e.g. Tryouts: March 15 · AHS Main Gym · 4:00 PM" /></div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="reg-boys-grades">Grade Range <span class="label-optional">(optional)</span></label><input type="text" id="reg-boys-grades" placeholder="e.g. 3rd–8th Grade" /></div>
+              <div class="f-row"><label for="reg-boys-date">Tryout Date</label><input type="text" id="reg-boys-date" placeholder="e.g. March 15, 2026" /></div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="reg-boys-time">Tryout Time <span class="label-optional">(optional)</span></label><input type="text" id="reg-boys-time" placeholder="e.g. 4:00 PM – 6:00 PM" /></div>
+              <div class="f-row"><label for="reg-boys-location">Location <span class="label-optional">(optional)</span></label><input type="text" id="reg-boys-location" placeholder="e.g. AHS Main Gymnasium" /></div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="reg-boys-deadline">Deadline <span class="label-optional">(optional)</span></label><input type="text" id="reg-boys-deadline" placeholder="e.g. March 10" /></div>
+              <div class="f-row"><label for="reg-boys-notes">Notes <span class="label-optional">(optional)</span></label><input type="text" id="reg-boys-notes" placeholder="e.g. Wear athletic clothes, bring water" /></div>
+            </div>
             <button type="button" class="f-submit" id="reg-boys-btn" onclick="saveRegistrationStatus('boys')">Save Boys Status →</button>
           </div>
           <div class="reg-admin-divider"></div>
@@ -661,7 +671,18 @@
               <label for="reg-girls-open">Registration Open</label>
               <input type="checkbox" id="reg-girls-open" />
             </div>
-            <div class="f-row"><label for="reg-girls-details">Details <span class="label-optional">(date, location, time — shown in the banner)</span></label><input type="text" id="reg-girls-details" placeholder="e.g. Tryouts: March 22 · AHS Main Gym · 5:00 PM" /></div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="reg-girls-grades">Grade Range <span class="label-optional">(optional)</span></label><input type="text" id="reg-girls-grades" placeholder="e.g. 3rd–8th Grade" /></div>
+              <div class="f-row"><label for="reg-girls-date">Tryout Date</label><input type="text" id="reg-girls-date" placeholder="e.g. March 22, 2026" /></div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="reg-girls-time">Tryout Time <span class="label-optional">(optional)</span></label><input type="text" id="reg-girls-time" placeholder="e.g. 4:00 PM – 6:00 PM" /></div>
+              <div class="f-row"><label for="reg-girls-location">Location <span class="label-optional">(optional)</span></label><input type="text" id="reg-girls-location" placeholder="e.g. AHS Main Gymnasium" /></div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="reg-girls-deadline">Deadline <span class="label-optional">(optional)</span></label><input type="text" id="reg-girls-deadline" placeholder="e.g. March 17" /></div>
+              <div class="f-row"><label for="reg-girls-notes">Notes <span class="label-optional">(optional)</span></label><input type="text" id="reg-girls-notes" placeholder="e.g. Wear athletic clothes, bring water" /></div>
+            </div>
             <button type="button" class="f-submit" id="reg-girls-btn" onclick="saveRegistrationStatus('girls')">Save Girls Status →</button>
           </div>
         </div>

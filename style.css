@@ -762,6 +762,8 @@ footer {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
+  .reg-program-grid { grid-template-columns: 1fr; }
+
   nav { padding: 0 20px; }
 
   .nav-links {
@@ -906,32 +908,49 @@ footer {
 .admin-cancel:hover { border-color: rgba(255,255,255,.6); color: var(--white); }
 .admin-cancel--hidden { display: none; }
 
-/* ── REGISTRATION STATUS BAND ── */
-.reg-status-band {
-  background: var(--gold);
-  padding: 24px 72px;
+/* ── REGISTRATION STATUS ── */
+.reg-intro-text { margin-top: 8px; margin-bottom: 32px; }
+.reg-program-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
 }
-.reg-status-inner {
-  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+.reg-program-card {
+  border: 1px solid var(--rule); border-radius: 4px; overflow: hidden;
 }
-.reg-status-label {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 700; font-size: 0.7rem; letter-spacing: 0.18em;
-  text-transform: uppercase; color: var(--navy); white-space: nowrap;
+.reg-program-card-top {
+  background: var(--navy); padding: 24px 28px;
 }
-.reg-chips { display: flex; gap: 12px; flex-wrap: wrap; flex: 1; }
-.reg-chip {
-  background: rgba(255,255,255,.4); border: 1px solid rgba(13,35,64,.15);
-  border-radius: 3px; padding: 8px 16px;
+.reg-program-name {
+  font-family: 'Oswald', sans-serif; font-weight: 700;
+  font-size: 1.9rem; color: var(--white); line-height: 1;
 }
-.reg-chip-program {
-  font-family: 'Oswald', sans-serif; font-weight: 600;
-  font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy);
+.reg-program-name span { color: var(--gold); }
+.reg-program-grades {
+  font-family: 'Oswald', sans-serif; font-size: 0.68rem;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,.5); margin-top: 6px;
 }
-.reg-chip-details { font-size: 0.82rem; color: var(--navy); opacity: 0.8; margin-top: 2px; }
-.reg-status-btn {
-  background: var(--navy) !important; color: var(--white) !important; flex-shrink: 0;
+.reg-program-body { padding: 20px 28px; background: var(--sand); }
+.reg-info-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.9rem; color: var(--ink); margin-bottom: 10px;
 }
+.reg-info-icon { font-size: 0.85rem; flex-shrink: 0; margin-top: 1px; }
+.reg-deadline {
+  font-family: 'Oswald', sans-serif; font-size: 0.78rem;
+  letter-spacing: 0.06em; color: #b33000; margin-bottom: 10px;
+}
+.reg-notes {
+  font-size: 0.82rem; color: var(--muted); margin-bottom: 16px;
+  border-top: 1px solid var(--rule); padding-top: 10px; margin-top: 4px;
+}
+.reg-program-btn {
+  display: block; text-align: center; background: var(--navy); color: var(--white);
+  font-family: 'Oswald', sans-serif; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; font-size: 0.78rem;
+  padding: 13px 20px; text-decoration: none; border-radius: 2px; margin-top: 16px;
+  transition: background .15s, color .15s;
+}
+.reg-program-btn:hover { background: var(--gold); color: var(--navy); }
 
 /* ── SCHEDULE PAGE ── */
 .schedule-view-all {
