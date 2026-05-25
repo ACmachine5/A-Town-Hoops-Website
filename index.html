@@ -29,7 +29,8 @@
     <ul class="nav-links" id="nav-links">
       <li><a href="#" onclick="showPage('home');    return false;" id="nav-home"         class="active">Home</a></li>
       <li><a href="#" onclick="showPage('about');   return false;" id="nav-about"                     >About</a></li>
-      <li><a href="#" onclick="showPage('teams');   return false;" id="nav-teams"                     >Teams</a></li>
+      <li><a href="#" onclick="showPage('teams');    return false;" id="nav-teams"                     >Teams</a></li>
+      <li><a href="#" onclick="showPage('schedule');return false;" id="nav-schedule"                  >Schedule</a></li>
       <li><a href="#" onclick="showPage('trophy');  return false;" id="nav-trophy"                    >Trophy Case</a></li>
       <li><a href="#" onclick="showPage('gallery'); return false;" id="nav-gallery"                   >Gallery</a></li>
       <li><a href="#" onclick="showPage('contact'); return false;" id="nav-contact"                   >Contact</a></li>
@@ -94,6 +95,15 @@
       </div>
     </div>
 
+    <!-- Registration Status (shown when at least one program is open) -->
+    <div id="home-reg-section" class="reg-status-band section-hidden">
+      <div class="reg-status-inner">
+        <div class="reg-status-label">Tryouts Now Open</div>
+        <div id="home-reg-chips" class="reg-chips"></div>
+        <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-solid reg-status-btn">Register Now →</a>
+      </div>
+    </div>
+
     <!-- Announcements (shown when data exists) -->
     <div id="home-announcements-section" class="content-section sand section-hidden">
       <div class="eyebrow">Latest News</div>
@@ -106,6 +116,7 @@
       <div class="eyebrow">Schedule</div>
       <h2 class="display">Upcoming Events.</h2>
       <div id="home-events" class="home-events-list"></div>
+      <a href="#" class="schedule-view-all" onclick="showPage('schedule'); return false;">View Full Schedule →</a>
     </div>
 
     <!-- What We Do -->
@@ -298,6 +309,24 @@
 
 
   <!-- ══════════════════════════════════════════
+       SCHEDULE PAGE
+  ══════════════════════════════════════════ -->
+  <div id="page-schedule" class="page">
+
+    <div class="page-header">
+      <div class="eyebrow">A-Town Hoops</div>
+      <h1 class="display">Schedule.</h1>
+      <p class="lead" style="margin-top: 16px;">All upcoming games, tournaments, tryouts, and events.</p>
+    </div>
+
+    <div class="content-section">
+      <div id="schedule-list"></div>
+    </div>
+
+  </div><!-- /page-schedule -->
+
+
+  <!-- ══════════════════════════════════════════
        CONTACT PAGE
   ══════════════════════════════════════════ -->
   <div id="page-contact" class="page">
@@ -414,6 +443,7 @@
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('teams', this)">Teams</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('trophy', this)">Trophy Case</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('gallery', this)">Gallery</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('settings', this)">Settings</button>
       </div>
 
       <!-- ── TROPHY CASE ── -->
@@ -606,6 +636,34 @@
           <div class="eyebrow">Current Board</div>
           <h2 class="display admin-section-heading">Members.</h2>
           <div id="admin-board-list" class="admin-posts-list"></div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div id="atab-settings" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">Settings</div>
+          <h2 class="display admin-section-heading">Registration Status.</h2>
+          <p class="lead settings-intro">Toggle tryout registration open or closed. When open, a banner appears on the home page with a Register link.</p>
+          <div class="reg-admin-row">
+            <div class="reg-admin-label">Boys Program</div>
+            <div class="f-row f-row--check">
+              <label for="reg-boys-open">Registration Open</label>
+              <input type="checkbox" id="reg-boys-open" />
+            </div>
+            <div class="f-row"><label for="reg-boys-details">Details <span class="label-optional">(date, location, time — shown in the banner)</span></label><input type="text" id="reg-boys-details" placeholder="e.g. Tryouts: March 15 · AHS Main Gym · 4:00 PM" /></div>
+            <button type="button" class="f-submit" id="reg-boys-btn" onclick="saveRegistrationStatus('boys')">Save Boys Status →</button>
+          </div>
+          <div class="reg-admin-divider"></div>
+          <div class="reg-admin-row">
+            <div class="reg-admin-label">Girls Program</div>
+            <div class="f-row f-row--check">
+              <label for="reg-girls-open">Registration Open</label>
+              <input type="checkbox" id="reg-girls-open" />
+            </div>
+            <div class="f-row"><label for="reg-girls-details">Details <span class="label-optional">(date, location, time — shown in the banner)</span></label><input type="text" id="reg-girls-details" placeholder="e.g. Tryouts: March 22 · AHS Main Gym · 5:00 PM" /></div>
+            <button type="button" class="f-submit" id="reg-girls-btn" onclick="saveRegistrationStatus('girls')">Save Girls Status →</button>
+          </div>
         </div>
       </div>
 

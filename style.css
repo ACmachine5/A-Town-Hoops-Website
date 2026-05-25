@@ -906,6 +906,84 @@ footer {
 .admin-cancel:hover { border-color: rgba(255,255,255,.6); color: var(--white); }
 .admin-cancel--hidden { display: none; }
 
+/* ── REGISTRATION STATUS BAND ── */
+.reg-status-band {
+  background: var(--gold);
+  padding: 24px 72px;
+}
+.reg-status-inner {
+  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+}
+.reg-status-label {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700; font-size: 0.7rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--navy); white-space: nowrap;
+}
+.reg-chips { display: flex; gap: 12px; flex-wrap: wrap; flex: 1; }
+.reg-chip {
+  background: rgba(255,255,255,.4); border: 1px solid rgba(13,35,64,.15);
+  border-radius: 3px; padding: 8px 16px;
+}
+.reg-chip-program {
+  font-family: 'Oswald', sans-serif; font-weight: 600;
+  font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy);
+}
+.reg-chip-details { font-size: 0.82rem; color: var(--navy); opacity: 0.8; margin-top: 2px; }
+.reg-status-btn {
+  background: var(--navy) !important; color: var(--white) !important; flex-shrink: 0;
+}
+
+/* ── SCHEDULE PAGE ── */
+.schedule-view-all {
+  display: inline-block; margin-top: 24px;
+  font-family: 'Oswald', sans-serif; font-size: 0.8rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--navy); text-decoration: none; border-bottom: 1px solid var(--gold);
+  padding-bottom: 2px;
+}
+.schedule-view-all:hover { color: var(--gold); border-color: var(--gold); }
+.schedule-month-group { margin-bottom: 48px; }
+.schedule-month-label {
+  font-family: 'Oswald', sans-serif; font-weight: 600;
+  font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); padding-bottom: 12px;
+  border-bottom: 2px solid var(--navy); margin-bottom: 0;
+}
+.schedule-row {
+  display: flex; gap: 24px; padding: 20px 0;
+  border-bottom: 1px solid var(--rule); align-items: flex-start;
+}
+.schedule-date-col { min-width: 48px; text-align: center; padding-top: 2px; }
+.schedule-day {
+  font-family: 'Oswald', sans-serif; font-weight: 700;
+  font-size: 1.8rem; color: var(--navy); line-height: 1;
+}
+.schedule-weekday {
+  font-family: 'Oswald', sans-serif; font-size: 0.6rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+}
+.schedule-event-col { flex: 1; }
+.schedule-event-title {
+  font-family: 'Oswald', sans-serif; font-weight: 600;
+  font-size: 1.05rem; color: var(--navy); margin-bottom: 4px;
+}
+.schedule-event-meta {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  font-size: 0.82rem; color: var(--muted);
+}
+.schedule-event-desc { font-size: 0.85rem; color: var(--ink); margin-top: 6px; }
+
+/* ── ADMIN SETTINGS ── */
+.settings-intro { margin-bottom: 32px; }
+.reg-admin-row {
+  border: 1px solid var(--rule); border-radius: 4px;
+  padding: 24px; max-width: 640px;
+}
+.reg-admin-label {
+  font-family: 'Oswald', sans-serif; font-weight: 600;
+  font-size: 1rem; color: var(--navy); margin-bottom: 16px;
+}
+.reg-admin-divider { height: 24px; }
+
 /* ── ABOUT: DIDN'T MAKE A TEAM ── */
 .about-not-a-fit {
   margin-top: 32px;

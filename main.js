@@ -51,19 +51,20 @@ function showPage(id) {
   document.getElementById('nav-links').classList.remove('open');
 
   const loaders = {
-    home:    loadHomePage,
-    trophy:  loadTrophyPosts,
-    teams:   () => loadTeams('boys'),
-    gallery: loadGallery,
-    about:   loadBoardMembers,
-    admin:   showAdminPage,
+    home:     loadHomePage,
+    trophy:   loadTrophyPosts,
+    teams:    () => loadTeams('boys'),
+    schedule: loadSchedulePage,
+    gallery:  loadGallery,
+    about:    loadBoardMembers,
+    admin:    showAdminPage,
   };
   if (loaders[id]) loaders[id]();
 }
 
 /* ── HOME PAGE ── */
 async function loadHomePage() {
-  await Promise.all([loadAnnouncements(), loadUpcomingEvents()]);
+  await Promise.all([loadAnnouncements(), loadUpcomingEvents(), loadRegistrationStatus()]);
 }
 
 async function loadAnnouncements() {
@@ -110,6 +111,65 @@ async function loadUpcomingEvents() {
         </div>
       </div>`;
   }).join('');
+}
+
+/* ── REGISTRATION STATUS ── */
+async function loadRegistrationStatus() {
+  const { data } = await db.from('registration_status').select('*');
+  if (!data) return;
+  const section = document.getElementById('home-reg-section');
+  const chips   = document.getElementById('home-reg-chips');
+  const open    = data.filter(r => r.is_open);
+  if (!open.length) { section.classList.add('section-hidden'); return; }
+  section.classList.remove('section-hidden');
+  chips.innerHTML = open.map(r => `
+    <div class="reg-chip">
+      <div class="reg-chip-program">${r.program === 'boys' ? 'Boys' : 'Girls'} Program</div>
+      ${r.details ? `<div class="reg-chip-details">${r.details}</div>` : ''}
+    </div>`).join('');
+}
+
+/* ── SCHEDULE PAGE ── */
+async function loadSchedulePage() {
+  const container = document.getElementById('schedule-list');
+  container.innerHTML = '<p class="trophy-state">Loading…</p>';
+  const today = new Date().toISOString().split('T')[0];
+  const { data, error } = await db.from('events').select('*')
+    .gte('event_date', today).order('event_date', { ascending: true });
+  if (error || !data || !data.length) {
+    container.innerHTML = '<p class="trophy-state">No upcoming events scheduled.</p>';
+    return;
+  }
+  const groups = {};
+  data.forEach(e => {
+    const key = new Date(e.event_date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(e);
+  });
+  const typeIcon = { tryout: '📋', tournament: '🏆', game: '🏀', practice: '🎯', other: '📌' };
+  container.innerHTML = Object.entries(groups).map(([month, events]) => `
+    <div class="schedule-month-group">
+      <div class="schedule-month-label">${month}</div>
+      ${events.map(e => {
+        const d = new Date(e.event_date + 'T00:00:00');
+        return `
+          <div class="schedule-row">
+            <div class="schedule-date-col">
+              <div class="schedule-day">${d.getDate()}</div>
+              <div class="schedule-weekday">${d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+            </div>
+            <div class="schedule-event-col">
+              <div class="schedule-event-title">${typeIcon[e.event_type] || '📌'} ${e.title}</div>
+              <div class="schedule-event-meta">
+                ${e.event_time ? `<span>${e.event_time}</span>` : ''}
+                ${e.location   ? `<span>📍 ${e.location}</span>` : ''}
+                ${e.team       ? `<span>👥 ${e.team}</span>` : ''}
+              </div>
+              ${e.description ? `<div class="schedule-event-desc">${e.description}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`).join('');
 }
 
 /* ── TROPHY CASE ── */
@@ -263,6 +323,7 @@ function switchAdminTab(tab, btn) {
   const loaders = {
     trophy: loadAdminPosts, announcements: loadAdminAnnouncements, teams: loadAdminTeams,
     events: loadAdminEvents, gallery: loadAdminGallery, board: loadAdminBoard,
+    settings: loadAdminSettings,
   };
   if (loaders[tab]) loaders[tab]();
 }
@@ -537,6 +598,30 @@ function renderAdminList(containerId, section, data, rowContentFn, table, reload
         <button type="button" class="admin-delete-btn" onclick="adminDelete('${table}', '${item.id}', ${reloadFn.name})">Delete</button>
       </div>
     </div>`).join('');
+}
+
+/* ── ADMIN SETTINGS ── */
+async function loadAdminSettings() {
+  const { data } = await db.from('registration_status').select('*');
+  if (!data) return;
+  const boys  = data.find(r => r.program === 'boys');
+  const girls = data.find(r => r.program === 'girls');
+  if (boys)  { document.getElementById('reg-boys-open').checked = boys.is_open;  document.getElementById('reg-boys-details').value  = boys.details  || ''; }
+  if (girls) { document.getElementById('reg-girls-open').checked = girls.is_open; document.getElementById('reg-girls-details').value = girls.details || ''; }
+}
+
+async function saveRegistrationStatus(program) {
+  const isOpen  = document.getElementById(`reg-${program}-open`).checked;
+  const details = document.getElementById(`reg-${program}-details`).value.trim();
+  const btn     = document.getElementById(`reg-${program}-btn`);
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  const { error } = await db.from('registration_status')
+    .update({ is_open: isOpen, details: details || null, updated_at: new Date().toISOString() })
+    .eq('program', program);
+  btn.textContent = `Save ${program === 'boys' ? 'Boys' : 'Girls'} Status →`;
+  btn.disabled = false;
+  if (error) { alert('Error: ' + error.message); return; }
+  showToast('✓ Status updated.');
 }
 
 /* ── TEAM TABS ── */
