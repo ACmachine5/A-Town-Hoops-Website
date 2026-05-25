@@ -115,6 +115,20 @@
       </div>
     </div>
 
+    <!-- Announcements (shown when data exists) -->
+    <div id="home-announcements-section" class="content-section sand section-hidden">
+      <div class="eyebrow">Latest News</div>
+      <h2 class="display">Updates.</h2>
+      <div id="home-announcements" class="home-announcements-list"></div>
+    </div>
+
+    <!-- Upcoming Events (shown when data exists) -->
+    <div id="home-events-section" class="content-section section-hidden">
+      <div class="eyebrow">Schedule</div>
+      <h2 class="display">Coming Up.</h2>
+      <div id="home-events" class="home-events-list"></div>
+    </div>
+
     <!-- CTA Band -->
     <div class="cta-band">
       <h2>Ready to Join?</h2>
@@ -176,15 +190,8 @@
       <div class="eyebrow">Leadership</div>
       <h2 class="display" style="font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 10px;">The Board.</h2>
       <p class="lead">Every person below donates their time to make A-Town Hoops possible.</p>
-      <div class="board-grid">
-        <div class="board-cell"><div class="board-role">President</div><div class="board-name">Sean Marsh</div></div>
-        <div class="board-cell"><div class="board-role">Girls Director</div><div class="board-name">Tyler Thomas</div></div>
-        <div class="board-cell"><div class="board-role">Boys Director</div><div class="board-name">Aaron Carlson</div></div>
-        <div class="board-cell"><div class="board-role">Treasurer</div><div class="board-name">Sarah Nobach</div></div>
-        <div class="board-cell"><div class="board-role">Secretary / Digital Comm.</div><div class="board-name">Becka Ostrom</div></div>
-        <div class="board-cell"><div class="board-role">Scheduling Coordinator</div><div class="board-name">Jammie &amp; Ethan Shull</div></div>
-        <div class="board-cell"><div class="board-role">HS Girls Liaison</div><div class="board-name">Lauryn Perrigo</div></div>
-        <div class="board-cell"><div class="board-role">HS Boys Liaison</div><div class="board-name">Drew Bryson</div></div>
+      <div id="board-grid" class="board-grid">
+        <p class="trophy-state">Loading…</p>
       </div>
     </div>
 
@@ -211,68 +218,9 @@
       <!-- Boys Panel -->
       <div id="panel-boys" class="team-panel active">
         <div class="eyebrow">Boys Basketball</div>
-        <h2 class="display" style="font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 10px;">A-Town Boys<br>25–26.</h2>
-        <p class="lead">A championship season across the board — multiple teams punching tickets to state.</p>
-
-        <div class="team-cards">
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">5th <span>Grade</span></div>
-              <div class="team-card-label">Boys Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 10–11</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom">
-              <span class="chip">AAU</span>
-              <span class="chip">Wesco</span>
-            </div>
-          </div>
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">6th <span>Grade</span></div>
-              <div class="team-card-label">Boys Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 11–12</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom">
-              <span class="chip">AAU</span>
-              <span class="chip">Wesco</span>
-            </div>
-          </div>
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">7th <span>Grade</span></div>
-              <div class="team-card-label">Boys Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 12–13</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom">
-              <span class="chip">AAU</span>
-              <span class="chip">Wesco</span>
-            </div>
-          </div>
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">8th <span>Grade</span></div>
-              <div class="team-card-label">Boys Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 13–14</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom">
-              <span class="chip">AAU</span>
-              <span class="chip">Wesco</span>
-            </div>
-          </div>
-        </div>
-
+        <h2 class="display teams-panel-heading">A-Town Boys<br>25–26.</h2>
+        <p class="lead">Competitive AAU and Wesco play across all grade levels.</p>
+        <div id="boys-cards" class="team-cards"><p class="trophy-state">Loading…</p></div>
         <div class="team-note">
           <strong>Tryout Registration:</strong> Complete the form before attending tryouts.
           &nbsp;<a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank">Register here →</a>
@@ -282,56 +230,9 @@
       <!-- Girls Panel -->
       <div id="panel-girls" class="team-panel">
         <div class="eyebrow">Girls Basketball</div>
-        <h2 class="display" style="font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 10px;">A-Town Girls<br>25–26.</h2>
+        <h2 class="display teams-panel-heading">A-Town Girls<br>25–26.</h2>
         <p class="lead">A dedicated girls program with experienced coaching and competitive league play.</p>
-
-        <div class="team-cards">
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">5th <span>Grade</span></div>
-              <div class="team-card-label">Girls Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 10–11</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
-          </div>
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">6th <span>Grade</span></div>
-              <div class="team-card-label">Girls Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 11–12</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
-          </div>
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">7th <span>Grade</span></div>
-              <div class="team-card-label">Girls Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 12–13</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
-          </div>
-          <div class="team-card">
-            <div class="team-card-top">
-              <div class="team-card-grade">8th <span>Grade</span></div>
-              <div class="team-card-label">Girls Basketball</div>
-            </div>
-            <div class="team-card-meta">
-              <div class="team-card-meta-row"><span class="meta-icon">📅</span> Ages 13–14</div>
-              <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: TBD</div>
-            </div>
-            <div class="team-card-bottom"><span class="chip">AAU</span><span class="chip">Wesco</span></div>
-          </div>
-        </div>
-
+        <div id="girls-cards" class="team-cards"><p class="trophy-state">Loading…</p></div>
         <div class="team-note">
           <strong>Girls Program Info:</strong> For tryout details,
           <a href="#" onclick="showPage('contact'); return false;">contact us</a> or
@@ -375,46 +276,11 @@
     </div>
 
     <div class="content-section">
-      <div class="gallery-grid">
-        <div class="g-item">
-          <div class="g-placeholder">
-            <div class="g-placeholder-icon">🏀</div>
-            <div class="g-placeholder-txt">Team Photo</div>
-          </div>
-          <div class="g-over"><span>⊕</span></div>
-        </div>
-        <div class="g-item">
-          <div class="g-placeholder">
-            <div class="g-placeholder-icon">🏆</div>
-            <div class="g-placeholder-txt">Tournament</div>
-          </div>
-          <div class="g-over"><span>⊕</span></div>
-        </div>
-        <div class="g-item">
-          <div class="g-placeholder">
-            <div class="g-placeholder-icon">🎯</div>
-            <div class="g-placeholder-txt">Practice</div>
-          </div>
-          <div class="g-over"><span>⊕</span></div>
-        </div>
-        <div class="g-item">
-          <div class="g-placeholder">
-            <div class="g-placeholder-icon">🦅</div>
-            <div class="g-placeholder-txt">Game Action</div>
-          </div>
-          <div class="g-over"><span>⊕</span></div>
-        </div>
-        <div class="g-item">
-          <div class="g-placeholder">
-            <div class="g-placeholder-icon">🎫</div>
-            <div class="g-placeholder-txt">State Celebration</div>
-          </div>
-          <div class="g-over"><span>⊕</span></div>
-        </div>
+      <div id="gallery-grid" class="gallery-grid-dynamic">
+        <p class="trophy-state">Loading…</p>
       </div>
-      <p class="gallery-note">
-        Have photos from a game or tournament?
-        <a href="#" onclick="showPage('contact'); return false;">Send them our way.</a>
+      <p class="gallery-note" id="gallery-empty-note" style="display:none">
+        No photos yet — add them from the <a href="#" onclick="showPage('admin'); return false;">Admin panel</a>.
       </p>
     </div>
 
@@ -495,7 +361,7 @@
             <label>Message</label>
             <textarea id="cf-message" placeholder="How can we help?"></textarea>
           </div>
-          <button class="f-submit" onclick="submitForm()">Send Message →</button>
+          <button type="button" class="f-submit" onclick="submitForm()">Send Message →</button>
         </div>
 
       </div>
@@ -530,53 +396,195 @@
     <!-- Dashboard (shown after auth) -->
     <div id="admin-dashboard" class="admin-dashboard--hidden">
 
-      <div class="content-section">
-        <div class="eyebrow">Trophy Case</div>
-        <h2 class="display admin-section-heading">New Entry.</h2>
+      <!-- Tab Bar -->
+      <div class="admin-tabs-wrap">
+        <button type="button" class="admin-tab-btn active" onclick="switchAdminTab('trophy', this)">Trophy Case</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('announcements', this)">Announcements</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('teams', this)">Teams</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('events', this)">Events</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('gallery', this)">Gallery</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('board', this)">Board</button>
+      </div>
 
-        <div class="admin-form">
-          <div class="admin-two-col">
-            <div class="f-row">
-              <label for="ap-date">Date</label>
-              <input type="date" id="ap-date" />
+      <!-- ── TROPHY CASE ── -->
+      <div id="atab-trophy" class="admin-panel active">
+        <div class="content-section">
+          <div class="eyebrow">Trophy Case</div>
+          <h2 class="display admin-section-heading">New Entry.</h2>
+          <div class="admin-form">
+            <div class="admin-two-col">
+              <div class="f-row"><label for="ap-date">Date</label><input type="date" id="ap-date" /></div>
+              <div class="f-row">
+                <label for="ap-type">Achievement Type</label>
+                <select id="ap-type" title="Achievement Type">
+                  <option value="">Select type…</option>
+                  <option value="championship">🏆 Championship</option>
+                  <option value="tournament_win">🥇 Tournament Win</option>
+                  <option value="state_qualifier">🎫 State Qualifier</option>
+                  <option value="milestone">⭐ Milestone</option>
+                </select>
+              </div>
             </div>
-            <div class="f-row">
-              <label for="ap-type">Achievement Type</label>
-              <select id="ap-type" title="Achievement Type">
-                <option value="">Select type…</option>
-                <option value="championship">🏆 Championship</option>
-                <option value="tournament_win">🥇 Tournament Win</option>
-                <option value="state_qualifier">🎫 State Qualifier</option>
-                <option value="milestone">⭐ Milestone</option>
-              </select>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="ap-title">Title</label><input type="text" id="ap-title" placeholder="e.g. Wesco Fall Classic Champions" /></div>
+              <div class="f-row"><label for="ap-team">Team</label><input type="text" id="ap-team" placeholder="e.g. Boys 7th Grade" /></div>
             </div>
+            <div class="f-row"><label for="ap-desc">Description</label><textarea id="ap-desc" placeholder="A short note about the achievement…"></textarea></div>
+            <div class="f-row"><label for="ap-photo">Photo URL <span class="label-optional">(optional)</span></label><input type="url" id="ap-photo" placeholder="https://…" /></div>
+            <button type="button" class="f-submit" id="ap-submit" onclick="submitTrophyPost()">Publish Entry →</button>
           </div>
-          <div class="admin-two-col">
-            <div class="f-row">
-              <label for="ap-title">Title</label>
-              <input type="text" id="ap-title" placeholder="e.g. Wesco Fall Classic Champions" />
-            </div>
-            <div class="f-row">
-              <label for="ap-team">Team</label>
-              <input type="text" id="ap-team" placeholder="e.g. Boys 7th Grade" />
-            </div>
-          </div>
-          <div class="f-row">
-            <label for="ap-desc">Description</label>
-            <textarea id="ap-desc" placeholder="A short note about the achievement…"></textarea>
-          </div>
-          <div class="f-row">
-            <label for="ap-photo">Photo URL <span class="label-optional">(optional)</span></label>
-            <input type="url" id="ap-photo" placeholder="https://…" />
-          </div>
-          <button class="f-submit" id="ap-submit" onclick="submitTrophyPost()">Publish Entry →</button>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Published</div>
+          <h2 class="display admin-section-heading">Recent Entries.</h2>
+          <div id="admin-posts-list" class="admin-posts-list"></div>
         </div>
       </div>
 
-      <div class="content-section cream">
-        <div class="eyebrow">Published</div>
-        <h2 class="display admin-section-heading">Recent Entries.</h2>
-        <div id="admin-posts-list" class="admin-posts-list"></div>
+      <!-- ── ANNOUNCEMENTS ── -->
+      <div id="atab-announcements" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">Announcements</div>
+          <h2 class="display admin-section-heading">New Announcement.</h2>
+          <div class="admin-form">
+            <div class="f-row"><label for="an-title">Title</label><input type="text" id="an-title" placeholder="e.g. Tryout Dates Announced" /></div>
+            <div class="f-row"><label for="an-body">Body</label><textarea id="an-body" placeholder="Write your announcement here…"></textarea></div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="an-date">Publish Date</label><input type="date" id="an-date" /></div>
+              <div class="f-row f-row--check"><label for="an-published">Visible on site</label><input type="checkbox" id="an-published" checked /></div>
+            </div>
+            <button type="button" class="f-submit" id="an-submit" onclick="submitAnnouncement()">Publish →</button>
+          </div>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Published</div>
+          <h2 class="display admin-section-heading">Announcements.</h2>
+          <div id="admin-announcements-list" class="admin-posts-list"></div>
+        </div>
+      </div>
+
+      <!-- ── TEAMS ── -->
+      <div id="atab-teams" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">Teams</div>
+          <h2 class="display admin-section-heading">Add / Edit Team.</h2>
+          <div class="admin-form">
+            <div class="admin-two-col">
+              <div class="f-row">
+                <label for="tm-grade">Grade</label>
+                <select id="tm-grade" title="Grade">
+                  <option value="">Select grade…</option>
+                  <option>3rd</option><option>4th</option><option>5th</option>
+                  <option>6th</option><option>7th</option><option>8th</option>
+                </select>
+              </div>
+              <div class="f-row">
+                <label for="tm-gender">Program</label>
+                <select id="tm-gender" title="Program">
+                  <option value="">Select…</option>
+                  <option value="Boys">Boys</option>
+                  <option value="Girls">Girls</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="tm-coach">Coach Name</label><input type="text" id="tm-coach" placeholder="e.g. Coach Smith" /></div>
+              <div class="f-row"><label for="tm-age">Age Range</label><input type="text" id="tm-age" placeholder="e.g. Ages 10–11" /></div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="tm-league">League</label><input type="text" id="tm-league" placeholder="e.g. AAU · Wesco" /></div>
+              <div class="f-row"><label for="tm-season">Season</label><input type="text" id="tm-season" placeholder="e.g. 25–26" /></div>
+            </div>
+            <button type="button" class="f-submit" id="tm-submit" onclick="submitTeam()">Save Team →</button>
+          </div>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Current Roster</div>
+          <h2 class="display admin-section-heading">Teams.</h2>
+          <div id="admin-teams-list" class="admin-posts-list"></div>
+        </div>
+      </div>
+
+      <!-- ── EVENTS ── -->
+      <div id="atab-events" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">Events</div>
+          <h2 class="display admin-section-heading">New Event.</h2>
+          <div class="admin-form">
+            <div class="admin-two-col">
+              <div class="f-row"><label for="ev-title">Title</label><input type="text" id="ev-title" placeholder="e.g. 7th Grade Tryouts" /></div>
+              <div class="f-row">
+                <label for="ev-type">Type</label>
+                <select id="ev-type" title="Event Type">
+                  <option value="">Select type…</option>
+                  <option value="tryout">Tryout</option>
+                  <option value="tournament">Tournament</option>
+                  <option value="game">Game</option>
+                  <option value="practice">Practice</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="ev-date">Date</label><input type="date" id="ev-date" /></div>
+              <div class="f-row"><label for="ev-time">Time <span class="label-optional">(optional)</span></label><input type="text" id="ev-time" placeholder="e.g. 9:00 AM" /></div>
+            </div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="ev-location">Location <span class="label-optional">(optional)</span></label><input type="text" id="ev-location" placeholder="e.g. AHS Main Gym" /></div>
+              <div class="f-row"><label for="ev-team">Team <span class="label-optional">(optional)</span></label><input type="text" id="ev-team" placeholder="e.g. All Teams" /></div>
+            </div>
+            <div class="f-row"><label for="ev-desc">Description <span class="label-optional">(optional)</span></label><textarea id="ev-desc" placeholder="Any additional details…"></textarea></div>
+            <button type="button" class="f-submit" id="ev-submit" onclick="submitEvent()">Add Event →</button>
+          </div>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Upcoming</div>
+          <h2 class="display admin-section-heading">Events.</h2>
+          <div id="admin-events-list" class="admin-posts-list"></div>
+        </div>
+      </div>
+
+      <!-- ── GALLERY ── -->
+      <div id="atab-gallery" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">Gallery</div>
+          <h2 class="display admin-section-heading">Add Photo.</h2>
+          <div class="admin-form">
+            <div class="f-row"><label for="gl-url">Photo URL</label><input type="url" id="gl-url" placeholder="https://…" /></div>
+            <div class="f-row"><label for="gl-caption">Caption <span class="label-optional">(optional)</span></label><input type="text" id="gl-caption" placeholder="e.g. 7th Grade Wesco Champions" /></div>
+            <div class="admin-two-col">
+              <div class="f-row"><label for="gl-team">Team <span class="label-optional">(optional)</span></label><input type="text" id="gl-team" placeholder="e.g. Boys 7th Grade" /></div>
+              <div class="f-row"><label for="gl-date">Date <span class="label-optional">(optional)</span></label><input type="date" id="gl-date" /></div>
+            </div>
+            <button type="button" class="f-submit" id="gl-submit" onclick="submitGalleryItem()">Add Photo →</button>
+          </div>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Published</div>
+          <h2 class="display admin-section-heading">Photos.</h2>
+          <div id="admin-gallery-list" class="admin-posts-list"></div>
+        </div>
+      </div>
+
+      <!-- ── BOARD MEMBERS ── -->
+      <div id="atab-board" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">Board Members</div>
+          <h2 class="display admin-section-heading">Add Member.</h2>
+          <div class="admin-form">
+            <div class="admin-two-col">
+              <div class="f-row"><label for="bm-role">Role</label><input type="text" id="bm-role" placeholder="e.g. Boys Director" /></div>
+              <div class="f-row"><label for="bm-name">Name</label><input type="text" id="bm-name" placeholder="Full name" /></div>
+            </div>
+            <div class="f-row"><label for="bm-order">Display Order <span class="label-optional">(lower number = appears first)</span></label><input type="number" id="bm-order" placeholder="e.g. 1" min="0" /></div>
+            <button type="button" class="f-submit" id="bm-submit" onclick="submitBoardMember()">Add Member →</button>
+          </div>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Current Board</div>
+          <h2 class="display admin-section-heading">Members.</h2>
+          <div id="admin-board-list" class="admin-posts-list"></div>
+        </div>
       </div>
 
     </div><!-- /admin-dashboard -->
