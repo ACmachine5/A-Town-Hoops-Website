@@ -924,6 +924,16 @@ footer {
 }
 .admin-edit-btn:hover { background: var(--navy); color: var(--white); }
 
+.admin-order-btn {
+  background: transparent; border: 1px solid var(--rule);
+  color: var(--navy); font-size: 0.65rem;
+  width: 28px; height: 28px; border-radius: 2px; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all .15s; flex-shrink: 0;
+}
+.admin-order-btn:hover:not(:disabled) { background: var(--navy); color: var(--white); border-color: var(--navy); }
+.admin-order-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
 .admin-cancel {
   background: transparent; border: 1px solid rgba(255,255,255,.25);
   color: rgba(255,255,255,.6); font-family: 'Oswald', sans-serif;

@@ -488,6 +488,7 @@ async function loadAdminTeams() {
 
 /* ── ROSTER MANAGEMENT ── */
 let _rosterTeamId = null;
+let _boardData    = [];
 
 function openRosterManager(teamId, teamName) {
   _rosterTeamId = teamId;
@@ -581,9 +582,42 @@ async function submitBoardMember() {
 
 async function loadAdminBoard() {
   const { data } = await db.from('board_members').select('*').order('display_order');
-  renderAdminList('admin-board-list', 'board', data,
-    m => `<span class="admin-post-date">#${m.display_order}</span><span class="admin-post-title-text">${m.name}</span><span class="admin-post-team">${m.role}</span>`,
-    'board_members', loadAdminBoard);
+  _boardData = data || [];
+  renderBoardAdminList();
+}
+
+function renderBoardAdminList() {
+  const list = document.getElementById('admin-board-list');
+  if (!_boardData.length) { list.innerHTML = '<p class="admin-state">No entries yet.</p>'; return; }
+  _boardData.forEach(item => { _store[item.id] = item; });
+  const last = _boardData.length - 1;
+  list.innerHTML = _boardData.map((m, i) => `
+    <div class="admin-post-row">
+      <div class="admin-post-info">
+        <span class="admin-post-title-text">${m.name}</span>
+        <span class="admin-post-team">${m.role}</span>
+      </div>
+      <div class="admin-row-actions">
+        <button type="button" class="admin-order-btn" onclick="moveBoardMember(${i}, -1)" ${i === 0 ? 'disabled' : ''} title="Move up">▲</button>
+        <button type="button" class="admin-order-btn" onclick="moveBoardMember(${i},  1)" ${i === last ? 'disabled' : ''} title="Move down">▼</button>
+        <button type="button" class="admin-edit-btn" onclick="startEdit('board', '${m.id}')">Edit</button>
+        <button type="button" class="admin-delete-btn" onclick="adminDelete('board_members', '${m.id}', loadAdminBoard)">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function moveBoardMember(index, direction) {
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= _boardData.length) return;
+  [_boardData[index], _boardData[newIndex]] = [_boardData[newIndex], _boardData[index]];
+  const results = await Promise.all(
+    _boardData.map((m, i) => db.from('board_members').update({ display_order: i + 1 }).eq('id', m.id))
+  );
+  const failed = results.find(r => r.error);
+  if (failed) { alert('Error saving order: ' + failed.error.message); return; }
+  _boardData.forEach((m, i) => { m.display_order = i + 1; _store[m.id] = m; });
+  renderBoardAdminList();
+  showToast('✓ Order saved.');
 }
 
 /* ── ADMIN CORE HELPERS ── */
