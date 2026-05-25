@@ -307,7 +307,6 @@ async function loadTeams(gender) {
         </div>
         <div class="team-card-right">
           <div class="team-card-meta">
-            ${t.age_range ? `<div class="team-card-meta-row"><span class="meta-icon">📅</span> ${t.age_range}</div>` : ''}
             <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: ${t.coach_name || 'TBD'}</div>
             <div class="team-card-chips">
               ${(t.league || 'AAU · Wesco').split('·').map(l => `<span class="chip">${l.trim()}</span>`).join('')}
@@ -416,7 +415,7 @@ function startEdit(section, id) {
     },
     teams: () => {
       set('tm-grade', item.grade); set('tm-gender', item.gender); set('tm-coach', item.coach_name || '');
-      set('tm-age', item.age_range || ''); set('tm-league', item.league || ''); set('tm-season', item.season || '');
+      set('tm-league', item.league || ''); set('tm-season', item.season || '');
     },
     events: () => {
       set('ev-title', item.title); set('ev-type', item.event_type);
@@ -449,7 +448,7 @@ function cancelEdit(section) {
   const clearers = {
     trophy:        () => { clearFields(['ap-date','ap-title','ap-team','ap-photo'], ['ap-type']); quillTrophy.setText(''); },
     announcements: () => { clearFields(['an-title','an-date','an-expires']); document.getElementById('an-published').checked = true; quillAnnouncements.setText(''); },
-    teams:         () => clearFields(['tm-coach','tm-age','tm-league','tm-season'], ['tm-grade','tm-gender']),
+    teams:         () => clearFields(['tm-coach','tm-league','tm-season'], ['tm-grade','tm-gender']),
     events:        () => { clearFields(['ev-title','ev-date','ev-end-date','ev-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
     gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
     board:         () => clearFields(['bm-role','bm-name','bm-photo']),
@@ -504,7 +503,7 @@ async function loadAdminAnnouncements() {
 async function submitTeam() {
   const payload = {
     grade: get('tm-grade'), gender: get('tm-gender'), coach_name: get('tm-coach') || null,
-    age_range: get('tm-age') || null, league: get('tm-league') || 'AAU · Wesco', season: get('tm-season') || '25–26',
+    league: get('tm-league') || 'AAU · Wesco', season: get('tm-season') || '25–26',
   };
   if (!payload.grade || !payload.gender) { alert('Grade and Program are required.'); return; }
   await adminSave('teams', 'teams', payload, 'tm-submit', 'Save Team →', loadAdminTeams);
