@@ -864,12 +864,12 @@ footer {
 .admin-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
 .admin-edit-btn {
-  background: transparent; border: 1px solid rgba(255,255,255,.3);
-  color: rgba(255,255,255,.75); font-family: 'Oswald', sans-serif;
+  background: transparent; border: 1px solid var(--navy);
+  color: var(--navy); font-family: 'Oswald', sans-serif;
   font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
   padding: 4px 12px; border-radius: 2px; cursor: pointer; transition: all .15s;
 }
-.admin-edit-btn:hover { border-color: var(--gold); color: var(--gold); }
+.admin-edit-btn:hover { background: var(--navy); color: var(--white); }
 
 .admin-cancel {
   background: transparent; border: 1px solid rgba(255,255,255,.25);
