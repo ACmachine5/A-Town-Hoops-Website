@@ -168,7 +168,13 @@ async function loadRegistrationStatus() {
   const cards   = document.getElementById('home-reg-cards');
   if (!anyOpen) { section.classList.add('section-hidden'); return; }
   section.classList.remove('section-hidden');
-  const open = data.filter(r => r.is_open);
+  // Deduplicate: one card per program (highest id wins if duplicates exist)
+  const seen = new Set();
+  const open = data
+    .filter(r => r.is_open)
+    .sort((a, b) => b.id - a.id)
+    .filter(r => seen.has(r.program) ? false : (seen.add(r.program), true))
+    .sort((a, b) => a.program.localeCompare(b.program)); // boys before girls
   cards.innerHTML = open.map(r => {
     const label = r.program === 'boys' ? 'Boys' : 'Girls';
     return `
