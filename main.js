@@ -15,7 +15,12 @@ const _store    = {}; // id → cached row for edit population
 const _settings = {   // loaded from supabase settings table
   registrationUrl: 'https://forms.gle/YikHHK5KCYW21Gwn7',
   contactEndpoint: '',
+  instagramUrl: '',
+  facebookUrl:  '',
+  socialEmbed:  '',
 };
+let _faqData     = [];
+let _sponsorData = [];
 
 /* ── RICH TEXT EDITORS ── */
 let quillTrophy, quillAnnouncements, quillEvent;
@@ -38,6 +43,7 @@ function quillHTML(q) {
 const SUBMIT_LABELS = {
   trophy: 'Publish Entry →', announcements: 'Publish →', teams: 'Save Team →',
   events: 'Add Event →',    gallery: 'Add Photo →',      board: 'Add Member →',
+  faq: 'Add Question →',    sponsors: 'Add Sponsor →',
 };
 
 /* ── SITE SETTINGS ── */
@@ -46,7 +52,10 @@ async function loadSiteSettings() {
   if (!data) return;
   data.forEach(row => {
     if (row.key === 'registration_url' && row.value) _settings.registrationUrl = row.value;
-    if (row.key === 'contact_endpoint')              _settings.contactEndpoint  = row.value;
+    if (row.key === 'contact_endpoint') _settings.contactEndpoint = row.value || '';
+    if (row.key === 'instagram_url')    _settings.instagramUrl    = row.value || '';
+    if (row.key === 'facebook_url')     _settings.facebookUrl     = row.value || '';
+    if (row.key === 'social_embed')     _settings.socialEmbed     = row.value || '';
   });
   applyRegistrationUrl(_settings.registrationUrl);
 }
@@ -57,19 +66,28 @@ function applyRegistrationUrl(url) {
 }
 
 async function saveSettings() {
-  const regUrl   = get('st-reg-url');
-  const contact  = get('st-contact');
-  const btn      = document.getElementById('st-save-btn');
+  const regUrl  = get('st-reg-url');
+  const contact = get('st-contact');
+  const insta   = get('st-instagram');
+  const fb      = get('st-facebook');
+  const embed   = (document.getElementById('st-embed').value || '').trim();
+  const btn     = document.getElementById('st-save-btn');
   btn.textContent = 'Saving…'; btn.disabled = true;
   const results = await Promise.all([
-    db.from('settings').upsert({ key: 'registration_url', value: regUrl  || _settings.registrationUrl }, { onConflict: 'key' }),
+    db.from('settings').upsert({ key: 'registration_url', value: regUrl || _settings.registrationUrl }, { onConflict: 'key' }),
     db.from('settings').upsert({ key: 'contact_endpoint', value: contact }, { onConflict: 'key' }),
+    db.from('settings').upsert({ key: 'instagram_url',    value: insta   }, { onConflict: 'key' }),
+    db.from('settings').upsert({ key: 'facebook_url',     value: fb      }, { onConflict: 'key' }),
+    db.from('settings').upsert({ key: 'social_embed',     value: embed   }, { onConflict: 'key' }),
   ]);
   btn.textContent = 'Save Settings →'; btn.disabled = false;
   const failed = results.find(r => r.error);
   if (failed) { alert('Error: ' + failed.error.message); return; }
   if (regUrl) { _settings.registrationUrl = regUrl; applyRegistrationUrl(regUrl); }
   _settings.contactEndpoint = contact;
+  _settings.instagramUrl    = insta;
+  _settings.facebookUrl     = fb;
+  _settings.socialEmbed     = embed;
   showToast('✓ Settings saved.');
 }
 
@@ -101,7 +119,7 @@ function showPage(id) {
 
 /* ── HOME PAGE ── */
 async function loadHomePage() {
-  await Promise.all([loadAnnouncements(), loadUpcomingEvents(), loadRegistrationStatus()]);
+  await Promise.all([loadAnnouncements(), loadUpcomingEvents(), loadRegistrationStatus(), loadFAQs(), loadSponsors()]);
 }
 
 async function loadAnnouncements() {
@@ -193,6 +211,66 @@ async function loadRegistrationStatus() {
         </div>
       </div>`;
   }).join('');
+}
+
+/* ── FAQ (public) ── */
+async function loadFAQs() {
+  const section   = document.getElementById('home-faq-section');
+  const container = document.getElementById('home-faq-list');
+  const { data }  = await db.from('faqs').select('*').eq('is_published', true).order('display_order', { ascending: true });
+  if (!data || !data.length) { section.classList.add('section-hidden'); return; }
+  section.classList.remove('section-hidden');
+  container.innerHTML = data.map(f => `
+    <div class="faq-item" id="faq-item-${f.id}">
+      <button type="button" class="faq-question" onclick="toggleFAQ('${f.id}')" aria-expanded="false">
+        <span>${f.question}</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer-wrap">
+        <div class="faq-answer">${f.answer}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleFAQ(id) {
+  const item = document.getElementById('faq-item-' + id);
+  const btn  = item.querySelector('.faq-question');
+  const wrap = item.querySelector('.faq-answer-wrap');
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+  item.classList.toggle('faq-open', !open);
+  wrap.style.maxHeight = open ? '0' : wrap.scrollHeight + 'px';
+  btn.querySelector('.faq-icon').textContent = open ? '+' : '×';
+}
+
+/* ── SPONSORS (public) ── */
+async function loadSponsors() {
+  const section   = document.getElementById('home-sponsors-section');
+  const container = document.getElementById('home-sponsors-grid');
+  const { data }  = await db.from('sponsors').select('*').order('tier').order('display_order', { ascending: true });
+  if (!data || !data.length) { section.classList.add('section-hidden'); return; }
+  section.classList.remove('section-hidden');
+  const premier   = data.filter(s => s.tier === 'premier');
+  const supporter = data.filter(s => s.tier === 'supporter');
+  let html = '';
+  if (premier.length) {
+    html += `<div class="sponsor-tier-label">Premier Sponsors</div>
+             <div class="sponsor-tier-grid sponsor-tier-grid--premier">${premier.map(renderSponsorCard).join('')}</div>`;
+  }
+  if (supporter.length) {
+    html += `<div class="sponsor-tier-label sponsor-tier-label--supporter">Community Supporters</div>
+             <div class="sponsor-tier-grid sponsor-tier-grid--supporter">${supporter.map(renderSponsorCard).join('')}</div>`;
+  }
+  container.innerHTML = html;
+}
+
+function renderSponsorCard(s) {
+  const inner = s.logo_url
+    ? `<img src="${s.logo_url}" alt="${s.name}" class="sponsor-logo" loading="lazy" />`
+    : `<div class="sponsor-name-text">${s.name}</div>`;
+  return s.website_url
+    ? `<a href="${s.website_url}" target="_blank" rel="noopener" class="sponsor-card">${inner}</a>`
+    : `<div class="sponsor-card">${inner}</div>`;
 }
 
 /* ── SCHEDULE PAGE ── */
@@ -320,22 +398,118 @@ async function loadTeams(gender) {
 
 /* ── GALLERY (public) ── */
 async function loadGallery() {
-  const container = document.getElementById('gallery-grid');
+  const feed      = document.getElementById('gallery-feed');
   const emptyNote = document.getElementById('gallery-empty-note');
-  container.innerHTML = '<p class="trophy-state">Loading…</p>';
 
-  const { data, error } = await db.from('gallery_items').select('*').order('created_at', { ascending: false });
+  const { data, error } = await db.from('gallery_items').select('*')
+    .eq('is_approved', true).order('created_at', { ascending: false });
+
   if (error || !data || !data.length) {
-    container.innerHTML = '';
+    feed.innerHTML = '';
     emptyNote.style.display = 'block';
+  } else {
+    emptyNote.style.display = 'none';
+    feed.innerHTML = data.map(item => `
+      <div class="gallery-feed-card">
+        <div class="gallery-feed-img-wrap">
+          <img src="${item.photo_url}" alt="${item.caption || 'A-Town Hoops'}" loading="lazy" class="gallery-feed-img" />
+        </div>
+        ${item.caption || item.submitted_by ? `
+        <div class="gallery-feed-body">
+          ${item.caption ? `<div class="gallery-feed-caption">${item.caption}</div>` : ''}
+          ${item.submitted_by ? `<div class="gallery-feed-meta">📸 ${item.submitted_by}</div>` : ''}
+        </div>` : ''}
+      </div>`).join('');
+  }
+  renderGallerySocial();
+}
+
+/* Parent upload form */
+function previewUpload(input) {
+  const file        = input.files[0];
+  const area        = document.getElementById('gu-file-area');
+  const preview     = document.getElementById('gu-preview');
+  const placeholder = document.getElementById('gu-placeholder');
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+      area.classList.add('has-file');
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.style.display = 'none';
+    placeholder.style.display = 'block';
+    area.classList.remove('has-file');
+  }
+}
+
+async function submitGalleryUpload() {
+  const fileInput = document.getElementById('gu-file');
+  const file      = fileInput.files[0];
+  const name      = get('gu-name');
+  const caption   = get('gu-caption');
+
+  if (!file)  { alert('Please select a photo first.'); return; }
+  if (!name)  { alert('Please enter your name.'); return; }
+  if (!file.type.startsWith('image/')) { alert('Please select an image file (JPG, PNG, etc.).'); return; }
+  if (file.size > 15 * 1024 * 1024)   { alert('Photo must be under 15 MB.'); return; }
+
+  const btn = document.getElementById('gu-submit');
+  btn.textContent = 'Uploading…'; btn.disabled = true;
+
+  const ext      = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 8)}.${ext}`;
+
+  const { error: uploadError } = await db.storage.from('gallery').upload(filename, file, {
+    cacheControl: '3600', contentType: file.type,
+  });
+
+  if (uploadError) {
+    btn.textContent = 'Share Photo →'; btn.disabled = false;
+    alert('Upload failed: ' + uploadError.message);
     return;
   }
-  emptyNote.style.display = 'none';
-  container.innerHTML = data.map((item, i) => `
-    <div class="g-item ${i === 0 ? 'g-item--featured' : ''}">
-      <img src="${item.photo_url}" alt="${item.caption || 'A-Town Hoops'}" loading="lazy" class="g-img" />
-      ${item.caption ? `<div class="g-caption">${item.caption}${item.team ? ' · ' + item.team : ''}</div>` : ''}
-    </div>`).join('');
+
+  const { data: { publicUrl } } = db.storage.from('gallery').getPublicUrl(filename);
+
+  const { error: insertError } = await db.from('gallery_items').insert({
+    photo_url: publicUrl, caption: caption || null,
+    submitted_by: name, is_approved: false, is_admin_upload: false,
+  });
+
+  btn.textContent = 'Share Photo →'; btn.disabled = false;
+
+  if (insertError) {
+    await db.storage.from('gallery').remove([filename]);
+    alert('Error saving photo: ' + insertError.message); return;
+  }
+
+  fileInput.value = '';
+  document.getElementById('gu-name').value    = '';
+  document.getElementById('gu-caption').value = '';
+  document.getElementById('gu-preview').style.display     = 'none';
+  document.getElementById('gu-placeholder').style.display = 'block';
+  document.getElementById('gu-file-area').classList.remove('has-file');
+
+  showToast('✓ Photo submitted! It will appear after review — thank you!');
+}
+
+function renderGallerySocial() {
+  const section  = document.getElementById('gallery-social-section');
+  const embedEl  = document.getElementById('gallery-social-embed');
+  const linksEl  = document.getElementById('gallery-social-links');
+  const hasEmbed = !!_settings.socialEmbed;
+  const hasLinks = _settings.instagramUrl || _settings.facebookUrl;
+  if (!hasEmbed && !hasLinks) { section.classList.add('section-hidden'); return; }
+  section.classList.remove('section-hidden');
+  embedEl.innerHTML = _settings.socialEmbed || '';
+  linksEl.innerHTML = [
+    _settings.instagramUrl ? `<a href="${_settings.instagramUrl}" target="_blank" rel="noopener" class="social-follow-btn social-follow-btn--instagram">📸 Follow on Instagram</a>` : '',
+    _settings.facebookUrl  ? `<a href="${_settings.facebookUrl}"  target="_blank" rel="noopener" class="social-follow-btn social-follow-btn--facebook">👍 Follow on Facebook</a>`  : '',
+  ].join('');
 }
 
 /* ── BOARD MEMBERS (public) ── */
@@ -390,7 +564,7 @@ function switchAdminTab(tab, btn) {
   const loaders = {
     trophy: loadAdminPosts, announcements: loadAdminAnnouncements, teams: loadAdminTeams,
     events: loadAdminEvents, gallery: loadAdminGallery, board: loadAdminBoard,
-    settings: loadAdminSettings,
+    faq: loadAdminFAQs, sponsors: loadAdminSponsors, settings: loadAdminSettings,
   };
   if (loaders[tab]) loaders[tab]();
 }
@@ -431,11 +605,19 @@ function startEdit(section, id) {
     board: () => {
       set('bm-role', item.role); set('bm-name', item.name); set('bm-photo', item.photo_url || '');
     },
+    faq: () => {
+      set('fq-question', item.question);
+      document.getElementById('fq-answer').value = item.answer || '';
+    },
+    sponsors: () => {
+      set('sp-name', item.name); set('sp-tier', item.tier || 'supporter');
+      set('sp-logo', item.logo_url || ''); set('sp-url', item.website_url || '');
+    },
   };
 
   if (populators[section]) populators[section]();
 
-  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm' };
+  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm', faq: 'fq', sponsors: 'sp' };
   const p = prefix[section];
   document.getElementById(p + '-submit').textContent = 'Update →';
   document.getElementById(p + '-cancel').classList.remove('admin-cancel--hidden');
@@ -452,10 +634,12 @@ function cancelEdit(section) {
     events:        () => { clearFields(['ev-title','ev-date','ev-end-date','ev-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
     gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
     board:         () => clearFields(['bm-role','bm-name','bm-photo']),
+    faq:           () => { clearFields(['fq-question']); document.getElementById('fq-answer').value = ''; },
+    sponsors:      () => clearFields(['sp-name','sp-logo','sp-url'], ['sp-tier']),
   };
   if (clearers[section]) clearers[section]();
 
-  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm' };
+  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm', faq: 'fq', sponsors: 'sp' };
   const p = prefix[section];
   document.getElementById(p + '-submit').textContent = SUBMIT_LABELS[section];
   document.getElementById(p + '-cancel').classList.add('admin-cancel--hidden');
@@ -601,6 +785,7 @@ async function submitGalleryItem() {
   const payload = {
     photo_url: get('gl-url'), caption: get('gl-caption') || null,
     team: get('gl-team') || null, event_date: get('gl-date') || null,
+    is_approved: true, is_admin_upload: true,
   };
   if (!payload.photo_url) { alert('Photo URL is required.'); return; }
   await adminSave('gallery', 'gallery_items', payload, 'gl-submit', 'Add Photo →', loadAdminGallery);
@@ -608,9 +793,70 @@ async function submitGalleryItem() {
 
 async function loadAdminGallery() {
   const { data } = await db.from('gallery_items').select('*').order('created_at', { ascending: false });
-  renderAdminList('admin-gallery-list', 'gallery', data,
-    g => `<span class="admin-post-date">${g.event_date || '—'}</span><span class="admin-post-title-text">${g.caption || 'No caption'}</span><span class="admin-post-team">${g.team || ''}</span>`,
-    'gallery_items', loadAdminGallery);
+  const all      = data || [];
+  const pending  = all.filter(g => !g.is_approved);
+  const approved = all.filter(g =>  g.is_approved);
+
+  const pendingWrap  = document.getElementById('admin-gallery-pending-wrap');
+  const pendingList  = document.getElementById('admin-gallery-pending-list');
+  const pendingCount = document.getElementById('admin-pending-count');
+
+  if (pending.length) {
+    pendingWrap.style.display = 'block';
+    pendingCount.textContent  = pending.length;
+    pending.forEach(item => { _store[item.id] = item; });
+    pendingList.innerHTML = pending.map(g => `
+      <div class="admin-post-row">
+        <div class="admin-post-info">
+          <span class="admin-post-title-text">${g.caption || 'No caption'}</span>
+          <span class="admin-pending-submitter">Submitted by ${g.submitted_by || 'Unknown'}</span>
+        </div>
+        <div class="admin-row-actions">
+          <a href="${g.photo_url}" target="_blank" rel="noopener" class="admin-edit-btn">View</a>
+          <button type="button" class="admin-approve-btn" onclick="approveGalleryItem('${g.id}')">✓ Approve</button>
+          <button type="button" class="admin-delete-btn" onclick="deleteGalleryItem('${g.id}')">Delete</button>
+        </div>
+      </div>`).join('');
+  } else {
+    pendingWrap.style.display = 'none';
+  }
+
+  const list = document.getElementById('admin-gallery-list');
+  if (!approved.length) { list.innerHTML = '<p class="admin-state">No photos yet.</p>'; return; }
+  approved.forEach(item => { _store[item.id] = item; });
+  list.innerHTML = approved.map(g => `
+    <div class="admin-post-row">
+      <div class="admin-post-info">
+        <span class="admin-post-date">${g.event_date || '—'}</span>
+        <span class="admin-post-title-text">${g.caption || 'No caption'}</span>
+        <span class="admin-post-team">${g.submitted_by ? '👤 ' + g.submitted_by : (g.team || '')}</span>
+      </div>
+      <div class="admin-row-actions">
+        <a href="${g.photo_url}" target="_blank" rel="noopener" class="admin-edit-btn">View</a>
+        <button type="button" class="admin-edit-btn" onclick="startEdit('gallery', '${g.id}')">Edit</button>
+        <button type="button" class="admin-delete-btn" onclick="deleteGalleryItem('${g.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function approveGalleryItem(id) {
+  const { error } = await db.from('gallery_items').update({ is_approved: true }).eq('id', id);
+  if (error) { alert('Error: ' + error.message); return; }
+  showToast('✓ Photo approved and published.');
+  loadAdminGallery();
+}
+
+async function deleteGalleryItem(id) {
+  if (!confirm('Delete this photo? This cannot be undone.')) return;
+  const item = _store[id];
+  if (item && !item.is_admin_upload && item.photo_url) {
+    const parts = item.photo_url.split('/gallery/');
+    if (parts.length > 1) await db.storage.from('gallery').remove([parts[1]]);
+  }
+  const { error } = await db.from('gallery_items').delete().eq('id', id);
+  if (error) { alert('Error: ' + error.message); return; }
+  showToast('Deleted.');
+  loadAdminGallery();
 }
 
 /* ── ADMIN: BOARD MEMBERS ── */
@@ -664,6 +910,112 @@ async function moveBoardMember(index, direction) {
   if (failed) { alert('Error saving order: ' + failed.error.message); return; }
   _boardData.forEach((m, i) => { m.display_order = i + 1; _store[m.id] = m; });
   renderBoardAdminList();
+  showToast('✓ Order saved.');
+}
+
+/* ── ADMIN: FAQ ── */
+async function submitFAQ() {
+  const isEditing = _editing.section === 'faq' && _editing.id;
+  const payload = {
+    question:      get('fq-question'),
+    answer:        (document.getElementById('fq-answer').value || '').trim(),
+    is_published:  true,
+    display_order: isEditing ? (_store[_editing.id]?.display_order ?? 99) : (_faqData.length + 1),
+  };
+  if (!payload.question || !payload.answer) { alert('Question and Answer are required.'); return; }
+  await adminSave('faq', 'faqs', payload, 'fq-submit', 'Add Question →', loadAdminFAQs);
+}
+
+async function loadAdminFAQs() {
+  const { data } = await db.from('faqs').select('*').order('display_order');
+  _faqData = data || [];
+  renderFAQAdminList();
+}
+
+function renderFAQAdminList() {
+  const list = document.getElementById('admin-faq-list');
+  if (!_faqData.length) { list.innerHTML = '<p class="admin-state">No questions yet.</p>'; return; }
+  _faqData.forEach(item => { _store[item.id] = item; });
+  const last = _faqData.length - 1;
+  list.innerHTML = _faqData.map((f, i) => `
+    <div class="admin-post-row">
+      <div class="admin-post-info">
+        <span class="admin-post-title-text">${f.question}</span>
+      </div>
+      <div class="admin-row-actions">
+        <button type="button" class="admin-order-btn" onclick="moveFAQItem(${i}, -1)" ${i === 0 ? 'disabled' : ''} title="Move up">▲</button>
+        <button type="button" class="admin-order-btn" onclick="moveFAQItem(${i},  1)" ${i === last ? 'disabled' : ''} title="Move down">▼</button>
+        <button type="button" class="admin-edit-btn" onclick="startEdit('faq', '${f.id}')">Edit</button>
+        <button type="button" class="admin-delete-btn" onclick="adminDelete('faqs', '${f.id}', loadAdminFAQs)">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function moveFAQItem(index, direction) {
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= _faqData.length) return;
+  [_faqData[index], _faqData[newIndex]] = [_faqData[newIndex], _faqData[index]];
+  const results = await Promise.all(
+    _faqData.map((f, i) => db.from('faqs').update({ display_order: i + 1 }).eq('id', f.id))
+  );
+  const failed = results.find(r => r.error);
+  if (failed) { alert('Error saving order: ' + failed.error.message); return; }
+  _faqData.forEach((f, i) => { f.display_order = i + 1; _store[f.id] = f; });
+  renderFAQAdminList();
+  showToast('✓ Order saved.');
+}
+
+/* ── ADMIN: SPONSORS ── */
+async function submitSponsor() {
+  const isEditing = _editing.section === 'sponsors' && _editing.id;
+  const payload = {
+    name:          get('sp-name'),
+    tier:          get('sp-tier') || 'supporter',
+    logo_url:      get('sp-logo') || null,
+    website_url:   get('sp-url')  || null,
+    display_order: isEditing ? (_store[_editing.id]?.display_order ?? 99) : (_sponsorData.length + 1),
+  };
+  if (!payload.name) { alert('Business name is required.'); return; }
+  await adminSave('sponsors', 'sponsors', payload, 'sp-submit', 'Add Sponsor →', loadAdminSponsors);
+}
+
+async function loadAdminSponsors() {
+  const { data } = await db.from('sponsors').select('*').order('tier').order('display_order');
+  _sponsorData = data || [];
+  renderSponsorAdminList();
+}
+
+function renderSponsorAdminList() {
+  const list = document.getElementById('admin-sponsors-list');
+  if (!_sponsorData.length) { list.innerHTML = '<p class="admin-state">No sponsors yet.</p>'; return; }
+  _sponsorData.forEach(item => { _store[item.id] = item; });
+  const last = _sponsorData.length - 1;
+  list.innerHTML = _sponsorData.map((s, i) => `
+    <div class="admin-post-row">
+      <div class="admin-post-info">
+        <span class="admin-post-date">${s.tier}</span>
+        <span class="admin-post-title-text">${s.name}</span>
+      </div>
+      <div class="admin-row-actions">
+        <button type="button" class="admin-order-btn" onclick="moveSponsorItem(${i}, -1)" ${i === 0 ? 'disabled' : ''} title="Move up">▲</button>
+        <button type="button" class="admin-order-btn" onclick="moveSponsorItem(${i},  1)" ${i === last ? 'disabled' : ''} title="Move down">▼</button>
+        <button type="button" class="admin-edit-btn" onclick="startEdit('sponsors', '${s.id}')">Edit</button>
+        <button type="button" class="admin-delete-btn" onclick="adminDelete('sponsors', '${s.id}', loadAdminSponsors)">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function moveSponsorItem(index, direction) {
+  const newIndex = index + direction;
+  if (newIndex < 0 || newIndex >= _sponsorData.length) return;
+  [_sponsorData[index], _sponsorData[newIndex]] = [_sponsorData[newIndex], _sponsorData[index]];
+  const results = await Promise.all(
+    _sponsorData.map((s, i) => db.from('sponsors').update({ display_order: i + 1 }).eq('id', s.id))
+  );
+  const failed = results.find(r => r.error);
+  if (failed) { alert('Error saving order: ' + failed.error.message); return; }
+  _sponsorData.forEach((s, i) => { s.display_order = i + 1; _store[s.id] = s; });
+  renderSponsorAdminList();
   showToast('✓ Order saved.');
 }
 
@@ -732,8 +1084,11 @@ async function loadAdminSettings() {
   }
   if (siteData) {
     siteData.forEach(row => {
-      if (row.key === 'registration_url') document.getElementById('st-reg-url').value  = row.value || '';
-      if (row.key === 'contact_endpoint') document.getElementById('st-contact').value  = row.value || '';
+      if (row.key === 'registration_url') document.getElementById('st-reg-url').value   = row.value || '';
+      if (row.key === 'contact_endpoint') document.getElementById('st-contact').value   = row.value || '';
+      if (row.key === 'instagram_url')    document.getElementById('st-instagram').value = row.value || '';
+      if (row.key === 'facebook_url')     document.getElementById('st-facebook').value  = row.value || '';
+      if (row.key === 'social_embed')     document.getElementById('st-embed').value     = row.value || '';
     });
   }
 }

@@ -142,6 +142,13 @@
       </div>
     </div>
 
+    <!-- FAQ (shown when data exists) -->
+    <div id="home-faq-section" class="content-section sand section-hidden">
+      <div class="eyebrow">Questions</div>
+      <h2 class="display">FAQ.</h2>
+      <div id="home-faq-list" class="faq-list"></div>
+    </div>
+
     <!-- CTA Band -->
     <div class="cta-band">
       <h2>Ready to Join?</h2>
@@ -150,6 +157,14 @@
         <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-gold reg-gated reg-form-link">Register for Tryouts</a>
         <a href="#" class="btn-ghost-lt" onclick="showPage('contact'); return false;">Ask a Question</a>
       </div>
+    </div>
+
+    <!-- Sponsors (shown when data exists) -->
+    <div id="home-sponsors-section" class="content-section section-hidden">
+      <div class="eyebrow">Our Supporters</div>
+      <h2 class="display">Thank You.</h2>
+      <p class="lead" style="margin-bottom: 36px;">We're grateful to the local businesses and families who make A-Town Hoops possible.</p>
+      <div id="home-sponsors-grid"></div>
     </div>
 
   </div><!-- /page-home -->
@@ -295,13 +310,43 @@
       <p class="lead" style="margin-top: 16px;">Moments from the court — tournaments, practices, and championship celebrations.</p>
     </div>
 
-    <div class="content-section">
-      <div id="gallery-grid" class="gallery-grid-dynamic">
-        <p class="trophy-state">Loading…</p>
+    <!-- Upload Form -->
+    <div class="content-section sand">
+      <div class="gallery-upload-card">
+        <div class="gallery-upload-icon">📸</div>
+        <div class="gallery-upload-heading">Share a Game Day Photo</div>
+        <p class="gallery-upload-sub">Upload your favorite court moments. Photos are reviewed before going live — keep it fun and appropriate!</p>
+        <div class="gu-file-area" id="gu-file-area" onclick="document.getElementById('gu-file').click()">
+          <input type="file" id="gu-file" accept="image/*" style="display:none" onchange="previewUpload(this)" />
+          <img id="gu-preview" class="gu-preview" alt="Preview" style="display:none" />
+          <div id="gu-placeholder">
+            <span class="gu-file-icon">🖼️</span>
+            <span class="gu-file-text">Tap to select a photo</span>
+          </div>
+        </div>
+        <div class="f-row"><label>Your Name</label><input type="text" id="gu-name" placeholder="First name or parent / player name" /></div>
+        <div class="f-row"><label>Caption <span class="label-optional">(optional)</span></label><input type="text" id="gu-caption" placeholder="e.g. 7th grade championship game!" /></div>
+        <button type="button" id="gu-submit" class="gallery-upload-submit" onclick="submitGalleryUpload()">Share Photo →</button>
       </div>
+    </div>
+
+    <!-- Photo Feed -->
+    <div class="content-section">
+      <div class="eyebrow">Community Photos</div>
+      <h2 class="display">From the Court.</h2>
+      <div id="gallery-feed" class="gallery-feed"></div>
       <p class="gallery-note" id="gallery-empty-note" style="display:none">
-        No photos yet — add them from the <a href="#" onclick="showPage('admin'); return false;">Admin panel</a>.
+        No photos yet — be the first to share one!
       </p>
+    </div>
+
+    <!-- Social Feed -->
+    <div id="gallery-social-section" class="content-section sand section-hidden">
+      <div class="eyebrow">Follow Along</div>
+      <h2 class="display">On Social.</h2>
+      <p class="lead" style="margin-bottom: 16px;">See what families are sharing from the court.</p>
+      <div id="gallery-social-embed"></div>
+      <div id="gallery-social-links" class="social-follow-links"></div>
     </div>
 
   </div><!-- /page-gallery -->
@@ -432,6 +477,8 @@
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('teams', this)">Teams</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('trophy', this)">Trophy Case</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('gallery', this)">Gallery</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('faq', this)">FAQ</button>
+        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('sponsors', this)">Sponsors</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('settings', this)">Settings</button>
       </div>
 
@@ -586,6 +633,13 @@
 
       <!-- ── GALLERY ── -->
       <div id="atab-gallery" class="admin-panel">
+        <!-- Pending Review (shown when submissions exist) -->
+        <div class="content-section admin-gallery-pending-section" id="admin-gallery-pending-wrap" style="display:none">
+          <div class="eyebrow">Needs Approval</div>
+          <h2 class="display admin-section-heading">Pending. <span class="admin-pending-badge" id="admin-pending-count"></span></h2>
+          <div id="admin-gallery-pending-list" class="admin-posts-list"></div>
+        </div>
+        <!-- Admin add photo -->
         <div class="content-section">
           <div class="eyebrow">Gallery</div>
           <h2 class="display admin-section-heading">Add Photo.</h2>
@@ -599,6 +653,7 @@
             <button type="button" id="gl-cancel" class="admin-cancel admin-cancel--hidden" onclick="cancelEdit('gallery')">← Cancel Edit</button><button type="button" class="f-submit" id="gl-submit" onclick="submitGalleryItem()">Add Photo →</button>
           </div>
         </div>
+        <!-- Approved photos -->
         <div class="content-section cream">
           <div class="eyebrow">Published</div>
           <h2 class="display admin-section-heading">Photos.</h2>
@@ -627,6 +682,52 @@
         </div>
       </div>
 
+      <!-- ── FAQ ── -->
+      <div id="atab-faq" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">FAQ</div>
+          <h2 class="display admin-section-heading">Add Question.</h2>
+          <div class="admin-form">
+            <div class="f-row"><label for="fq-question">Question</label><input type="text" id="fq-question" placeholder="e.g. What grade levels do you offer?" /></div>
+            <div class="f-row"><label for="fq-answer">Answer</label><textarea id="fq-answer" rows="3" placeholder="Short, clear answer…"></textarea></div>
+            <button type="button" id="fq-cancel" class="admin-cancel admin-cancel--hidden" onclick="cancelEdit('faq')">← Cancel Edit</button><button type="button" class="f-submit" id="fq-submit" onclick="submitFAQ()">Add Question →</button>
+          </div>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Published</div>
+          <h2 class="display admin-section-heading">Questions.</h2>
+          <div id="admin-faq-list" class="admin-posts-list"></div>
+        </div>
+      </div>
+
+      <!-- ── SPONSORS ── -->
+      <div id="atab-sponsors" class="admin-panel">
+        <div class="content-section">
+          <div class="eyebrow">Sponsors</div>
+          <h2 class="display admin-section-heading">Add Sponsor.</h2>
+          <div class="admin-form">
+            <div class="admin-two-col">
+              <div class="f-row"><label for="sp-name">Business / Name</label><input type="text" id="sp-name" placeholder="e.g. Arlington Sports" /></div>
+              <div class="f-row">
+                <label for="sp-tier">Tier</label>
+                <select id="sp-tier" title="Tier">
+                  <option value="premier">Premier Sponsor</option>
+                  <option value="supporter">Community Supporter</option>
+                </select>
+              </div>
+            </div>
+            <div class="f-row"><label for="sp-logo">Logo URL <span class="label-optional">(optional — paste a direct image link)</span></label><input type="url" id="sp-logo" placeholder="https://…" /></div>
+            <div class="f-row"><label for="sp-url">Website URL <span class="label-optional">(optional)</span></label><input type="url" id="sp-url" placeholder="https://…" /></div>
+            <button type="button" id="sp-cancel" class="admin-cancel admin-cancel--hidden" onclick="cancelEdit('sponsors')">← Cancel Edit</button><button type="button" class="f-submit" id="sp-submit" onclick="submitSponsor()">Add Sponsor →</button>
+          </div>
+        </div>
+        <div class="content-section cream">
+          <div class="eyebrow">Current Sponsors</div>
+          <h2 class="display admin-section-heading">Sponsors.</h2>
+          <div id="admin-sponsors-list" class="admin-posts-list"></div>
+        </div>
+      </div>
+
       <!-- ── SETTINGS ── -->
       <div id="atab-settings" class="admin-panel">
 
@@ -644,6 +745,18 @@
               <input type="text" id="st-contact" placeholder="https://formspree.io/f/… or yourname@email.com" />
             </div>
             <p class="st-help">Enter a <strong>Formspree URL</strong> to receive contact form emails without any extra setup, or an <strong>email address</strong> to open the visitor's email client. Leave blank to disable form submissions.</p>
+            <div class="f-row">
+              <label for="st-instagram">Instagram URL <span class="label-optional">(optional)</span></label>
+              <input type="url" id="st-instagram" placeholder="https://instagram.com/…" />
+            </div>
+            <div class="f-row">
+              <label for="st-facebook">Facebook URL <span class="label-optional">(optional)</span></label>
+              <input type="url" id="st-facebook" placeholder="https://facebook.com/…" />
+            </div>
+            <div class="f-row">
+              <label for="st-embed">Social Feed Embed Code <span class="label-optional">(optional — paste a Behold.so or similar widget)</span></label>
+              <textarea id="st-embed" rows="4" placeholder="Paste embed code here…"></textarea>
+            </div>
             <button type="button" class="f-submit" id="st-save-btn" onclick="saveSettings()">Save Settings →</button>
           </div>
         </div>
