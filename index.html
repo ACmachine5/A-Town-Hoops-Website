@@ -12,6 +12,8 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css" />
+  <!-- Quill rich-text editor -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -429,7 +431,7 @@
               <div class="f-row"><label for="ap-title">Title</label><input type="text" id="ap-title" placeholder="e.g. Wesco Fall Classic Champions" /></div>
               <div class="f-row"><label for="ap-team">Team</label><input type="text" id="ap-team" placeholder="e.g. Boys 7th Grade" /></div>
             </div>
-            <div class="f-row"><label for="ap-desc">Description</label><textarea id="ap-desc" placeholder="A short note about the achievement…"></textarea></div>
+            <div class="f-row f-row--editor"><label>Description</label><div id="ap-desc-editor" class="rich-editor"></div></div>
             <div class="f-row"><label for="ap-photo">Photo URL <span class="label-optional">(optional)</span></label><input type="url" id="ap-photo" placeholder="https://…" /></div>
             <button type="button" id="ap-cancel" class="admin-cancel admin-cancel--hidden" onclick="cancelEdit('trophy')">← Cancel Edit</button><button type="button" class="f-submit" id="ap-submit" onclick="submitTrophyPost()">Publish Entry →</button>
           </div>
@@ -448,7 +450,7 @@
           <h2 class="display admin-section-heading">New Announcement.</h2>
           <div class="admin-form">
             <div class="f-row"><label for="an-title">Title</label><input type="text" id="an-title" placeholder="e.g. Tryout Dates Announced" /></div>
-            <div class="f-row"><label for="an-body">Body</label><textarea id="an-body" placeholder="Write your announcement here…"></textarea></div>
+            <div class="f-row f-row--editor"><label>Body</label><div id="an-body-editor" class="rich-editor"></div></div>
             <div class="admin-two-col">
               <div class="f-row"><label for="an-date">Publish Date</label><input type="date" id="an-date" /></div>
               <div class="f-row f-row--check"><label for="an-published">Visible on site</label><input type="checkbox" id="an-published" checked /></div>
@@ -533,7 +535,7 @@
               <div class="f-row"><label for="ev-location">Location <span class="label-optional">(optional)</span></label><input type="text" id="ev-location" placeholder="e.g. AHS Main Gym" /></div>
               <div class="f-row"><label for="ev-team">Team <span class="label-optional">(optional)</span></label><input type="text" id="ev-team" placeholder="e.g. All Teams" /></div>
             </div>
-            <div class="f-row"><label for="ev-desc">Description <span class="label-optional">(optional)</span></label><textarea id="ev-desc" placeholder="Any additional details…"></textarea></div>
+            <div class="f-row f-row--editor"><label>Description <span class="label-optional">(optional)</span></label><div id="ev-desc-editor" class="rich-editor"></div></div>
             <button type="button" id="ev-cancel" class="admin-cancel admin-cancel--hidden" onclick="cancelEdit('events')">← Cancel Edit</button><button type="button" class="f-submit" id="ev-submit" onclick="submitEvent()">Add Event →</button>
           </div>
         </div>
@@ -633,6 +635,8 @@
   <!-- Toast notification -->
   <div class="toast" id="toast"></div>
 
+  <!-- Quill -->
+  <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- JavaScript -->

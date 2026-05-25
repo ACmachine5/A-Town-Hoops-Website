@@ -880,3 +880,37 @@ footer {
 }
 .admin-cancel:hover { border-color: rgba(255,255,255,.6); color: var(--white); }
 .admin-cancel--hidden { display: none; }
+
+/* ── QUILL RICH TEXT EDITOR ── */
+.f-row--editor label { display: block; }
+.rich-editor { background: var(--white); border-radius: 3px; overflow: hidden; }
+.ql-toolbar.ql-snow {
+  border: 1px solid var(--rule); border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  font-family: 'Oswald', sans-serif;
+  background: #f9f7f4;
+}
+.ql-container.ql-snow {
+  border: 1px solid var(--rule);
+  border-radius: 0 0 3px 3px;
+  font-family: 'Source Serif 4', serif;
+  font-size: 0.94rem; font-weight: 300;
+  color: var(--ink);
+  min-height: 110px;
+}
+.ql-editor { min-height: 110px; padding: 11px 14px; }
+.ql-editor.ql-blank::before { color: var(--muted); font-style: normal; }
+.ql-snow .ql-stroke { stroke: var(--navy); }
+.ql-snow .ql-fill  { fill:   var(--navy); }
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke { stroke: var(--gold); }
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill   { fill:   var(--gold); }
+
+/* rendered rich text on public pages */
+.announcement-body p, .trophy-post-desc p { margin: 0 0 8px; }
+.announcement-body strong, .trophy-post-desc strong { font-weight: 600; }
+.announcement-body em, .trophy-post-desc em { font-style: italic; }
+.announcement-body a, .trophy-post-desc a { color: var(--navy); text-decoration: underline; }
+.announcement-body ul, .announcement-body ol,
+.trophy-post-desc ul, .trophy-post-desc ol { padding-left: 20px; margin: 0 0 8px; }

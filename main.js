@@ -13,6 +13,24 @@ const ADMIN_PASSWORD = 'Atownhoops';
 let _editing = { section: null, id: null };
 const _store  = {}; // id → cached row for edit population
 
+/* ── RICH TEXT EDITORS ── */
+let quillTrophy, quillAnnouncements, quillEvent;
+const QUILL_TOOLBAR = [
+  ['bold', 'italic', 'underline'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  ['link'],
+  ['clean'],
+];
+function initEditors() {
+  quillTrophy        = new Quill('#ap-desc-editor',  { theme: 'snow', modules: { toolbar: QUILL_TOOLBAR }, placeholder: 'A short note about the achievement…' });
+  quillAnnouncements = new Quill('#an-body-editor',   { theme: 'snow', modules: { toolbar: QUILL_TOOLBAR }, placeholder: 'Write your announcement here…' });
+  quillEvent         = new Quill('#ev-desc-editor',   { theme: 'snow', modules: { toolbar: QUILL_TOOLBAR }, placeholder: 'Any additional details…' });
+}
+function quillHTML(q) {
+  const html = q.root.innerHTML;
+  return (html === '<p><br></p>' || html === '') ? null : html;
+}
+
 const SUBMIT_LABELS = {
   trophy: 'Publish Entry →', announcements: 'Publish →', teams: 'Save Team →',
   events: 'Add Event →',    gallery: 'Add Photo →',      board: 'Add Member →',
@@ -60,7 +78,7 @@ async function loadAnnouncements() {
     <div class="announcement-card">
       <div class="announcement-date">${formatDate(a.published_at)}</div>
       <h3 class="announcement-title">${a.title}</h3>
-      <p class="announcement-body">${a.body}</p>
+      <div class="announcement-body">${a.body}</div>
     </div>`).join('');
 }
 
@@ -120,7 +138,7 @@ function renderTrophyPost(post) {
       </div>
       <h2 class="trophy-post-title">${post.title}</h2>
       <div class="trophy-post-team">${post.team}</div>
-      ${post.description ? `<p class="trophy-post-desc">${post.description}</p>` : ''}
+      ${post.description ? `<div class="trophy-post-desc">${post.description}</div>` : ''}
       ${post.photo_url   ? `<img class="trophy-post-photo" src="${post.photo_url}" alt="${post.title}" loading="lazy" />` : ''}
     </article>`;
 }
@@ -236,12 +254,13 @@ function startEdit(section, id) {
   const populators = {
     trophy: () => {
       set('ap-date', item.date); set('ap-title', item.title); set('ap-team', item.team);
-      set('ap-type', item.achievement_type); set('ap-desc', item.description || '');
-      set('ap-photo', item.photo_url || '');
+      set('ap-type', item.achievement_type); set('ap-photo', item.photo_url || '');
+      quillTrophy.clipboard.dangerouslyPasteHTML(item.description || '');
     },
     announcements: () => {
-      set('an-title', item.title); set('an-body', item.body); set('an-date', item.published_at);
+      set('an-title', item.title); set('an-date', item.published_at);
       document.getElementById('an-published').checked = item.is_published;
+      quillAnnouncements.clipboard.dangerouslyPasteHTML(item.body || '');
     },
     teams: () => {
       set('tm-grade', item.grade); set('tm-gender', item.gender); set('tm-coach', item.coach_name || '');
@@ -250,7 +269,8 @@ function startEdit(section, id) {
     events: () => {
       set('ev-title', item.title); set('ev-type', item.event_type); set('ev-date', item.event_date);
       set('ev-time', item.event_time || ''); set('ev-location', item.location || '');
-      set('ev-team', item.team || ''); set('ev-desc', item.description || '');
+      set('ev-team', item.team || '');
+      quillEvent.clipboard.dangerouslyPasteHTML(item.description || '');
     },
     gallery: () => {
       set('gl-url', item.photo_url); set('gl-caption', item.caption || '');
@@ -274,10 +294,10 @@ function cancelEdit(section) {
   _editing = { section: null, id: null };
 
   const clearers = {
-    trophy:        () => clearFields(['ap-date','ap-title','ap-team','ap-desc','ap-photo'], ['ap-type']),
-    announcements: () => { clearFields(['an-title','an-body','an-date']); document.getElementById('an-published').checked = true; },
+    trophy:        () => { clearFields(['ap-date','ap-title','ap-team','ap-photo'], ['ap-type']); quillTrophy.setText(''); },
+    announcements: () => { clearFields(['an-title','an-date']); document.getElementById('an-published').checked = true; quillAnnouncements.setText(''); },
     teams:         () => clearFields(['tm-coach','tm-age','tm-league','tm-season'], ['tm-grade','tm-gender']),
-    events:        () => clearFields(['ev-title','ev-date','ev-time','ev-location','ev-team','ev-desc'], ['ev-type']),
+    events:        () => { clearFields(['ev-title','ev-date','ev-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
     gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
     board:         () => clearFields(['bm-role','bm-name','bm-order']),
   };
@@ -293,7 +313,7 @@ function cancelEdit(section) {
 async function submitTrophyPost() {
   const payload = {
     date: get('ap-date'), title: get('ap-title'), team: get('ap-team'),
-    achievement_type: get('ap-type'), description: get('ap-desc') || null, photo_url: get('ap-photo') || null,
+    achievement_type: get('ap-type'), description: quillHTML(quillTrophy), photo_url: get('ap-photo') || null,
   };
   if (!payload.date || !payload.title || !payload.team || !payload.achievement_type) {
     alert('Date, Title, Team, and Type are required.'); return;
@@ -311,7 +331,7 @@ async function loadAdminPosts() {
 /* ── ADMIN: ANNOUNCEMENTS ── */
 async function submitAnnouncement() {
   const payload = {
-    title: get('an-title'), body: get('an-body'),
+    title: get('an-title'), body: quillHTML(quillAnnouncements) || '',
     published_at: get('an-date') || new Date().toISOString().split('T')[0],
     is_published: document.getElementById('an-published').checked,
   };
@@ -348,7 +368,7 @@ async function submitEvent() {
   const payload = {
     title: get('ev-title'), event_type: get('ev-type'), event_date: get('ev-date'),
     event_time: get('ev-time') || null, location: get('ev-location') || null,
-    team: get('ev-team') || null, description: get('ev-desc') || null,
+    team: get('ev-team') || null, description: quillHTML(quillEvent),
   };
   if (!payload.title || !payload.event_type || !payload.event_date) { alert('Title, Type, and Date are required.'); return; }
   await adminSave('events', 'events', payload, 'ev-submit', 'Add Event →', loadAdminEvents);
@@ -487,5 +507,6 @@ document.addEventListener('click', e => {
 });
 
 /* ── INIT ── */
+initEditors();
 loadHomePage();
 loadTeams('boys');
