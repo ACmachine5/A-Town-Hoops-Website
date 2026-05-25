@@ -106,7 +106,7 @@ async function loadUpcomingEvents() {
         </div>
         <div class="event-info">
           <div class="event-title">${typeIcon[e.event_type] || '📌'} ${e.title}</div>
-          ${(e.event_time || e.end_time) ? `<div class="event-meta">${e.event_time || ''}${e.end_time ? ' – ' + e.end_time : ''}</div>` : ''}
+          ${e.event_time ? `<div class="event-meta">${e.event_time}</div>` : ''}
           ${e.end_date && e.end_date !== e.event_date ? `<div class="event-meta">📅 Through ${formatDate(e.end_date)}</div>` : ''}
           ${e.location    ? `<div class="event-meta">📍 ${e.location}</div>` : ''}
           ${e.team        ? `<div class="event-meta">👥 ${e.team}</div>` : ''}
@@ -178,7 +178,7 @@ async function loadSchedulePage() {
               <div class="schedule-event-title">${typeIcon[e.event_type] || '📌'} ${e.title}</div>
               <div class="schedule-event-meta">
                 ${e.end_date && e.end_date !== e.event_date ? `<span>📅 ${formatDateRange(e.event_date, e.end_date)}</span>` : ''}
-                ${(e.event_time || e.end_time) ? `<span>🕐 ${e.event_time || ''}${e.end_time ? ' – ' + e.end_time : ''}</span>` : ''}
+                ${e.event_time ? `<span>🕐 ${e.event_time}</span>` : ''}
                 ${e.location   ? `<span>📍 ${e.location}</span>` : ''}
                 ${e.team       ? `<span>👥 ${e.team}</span>` : ''}
               </div>
@@ -370,7 +370,7 @@ function startEdit(section, id) {
     events: () => {
       set('ev-title', item.title); set('ev-type', item.event_type);
       set('ev-date', item.event_date); set('ev-end-date', item.end_date || '');
-      set('ev-time', item.event_time || ''); set('ev-end-time', item.end_time || '');
+      set('ev-time', item.event_time || '');
       set('ev-location', item.location || ''); set('ev-team', item.team || '');
       quillEvent.clipboard.dangerouslyPasteHTML(item.description || '');
     },
@@ -399,7 +399,7 @@ function cancelEdit(section) {
     trophy:        () => { clearFields(['ap-date','ap-title','ap-team','ap-photo'], ['ap-type']); quillTrophy.setText(''); },
     announcements: () => { clearFields(['an-title','an-date','an-expires']); document.getElementById('an-published').checked = true; quillAnnouncements.setText(''); },
     teams:         () => clearFields(['tm-coach','tm-age','tm-league','tm-season'], ['tm-grade','tm-gender']),
-    events:        () => { clearFields(['ev-title','ev-date','ev-end-date','ev-time','ev-end-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
+    events:        () => { clearFields(['ev-title','ev-date','ev-end-date','ev-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
     gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
     board:         () => clearFields(['bm-role','bm-name','bm-order']),
   };
@@ -530,7 +530,7 @@ async function submitEvent() {
   const payload = {
     title: get('ev-title'), event_type: get('ev-type'), event_date: get('ev-date'),
     end_date: get('ev-end-date') || null,
-    event_time: get('ev-time') || null, end_time: get('ev-end-time') || null,
+    event_time: get('ev-time') || null,
     location: get('ev-location') || null,
     team: get('ev-team') || null, description: quillHTML(quillEvent),
   };
