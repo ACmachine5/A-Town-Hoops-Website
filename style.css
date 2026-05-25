@@ -881,6 +881,24 @@ footer {
 .admin-cancel:hover { border-color: rgba(255,255,255,.6); color: var(--white); }
 .admin-cancel--hidden { display: none; }
 
+/* ── ABOUT: DIDN'T MAKE A TEAM ── */
+.about-not-a-fit {
+  margin-top: 32px;
+  padding: 20px 24px;
+  border-left: 3px solid var(--gold);
+  background: #f9f7f4;
+  border-radius: 0 3px 3px 0;
+}
+.about-not-a-fit-heading {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+.about-not-a-fit p { font-size: 0.9rem; color: var(--ink); margin-bottom: 10px; }
+.about-not-a-fit ul { padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.about-not-a-fit li { font-size: 0.88rem; color: var(--ink); }
+.about-not-a-fit li strong { color: var(--navy); }
+
 /* ── QUILL RICH TEXT EDITOR ── */
 .f-row--editor label { display: block; }
 .rich-editor { background: var(--white); border-radius: 3px; overflow: hidden; }
