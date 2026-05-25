@@ -649,7 +649,7 @@ function cancelEdit(section) {
 async function submitTrophyPost() {
   const payload = {
     date: get('ap-date'), title: get('ap-title'), team: get('ap-team'),
-    achievement_type: get('ap-type'), description: quillHTML(quillTrophy), photo_url: get('ap-photo') || null,
+    achievement_type: get('ap-type'), description: quillHTML(quillTrophy), photo_url: convertDriveUrl(get('ap-photo')) || null,
   };
   if (!payload.date || !payload.title || !payload.team || !payload.achievement_type) {
     alert('Date, Title, Team, and Type are required.'); return;
@@ -783,7 +783,7 @@ async function loadAdminEvents() {
 /* ── ADMIN: GALLERY ── */
 async function submitGalleryItem() {
   const payload = {
-    photo_url: get('gl-url'), caption: get('gl-caption') || null,
+    photo_url: convertDriveUrl(get('gl-url')), caption: get('gl-caption') || null,
     team: get('gl-team') || null, event_date: get('gl-date') || null,
     is_approved: true, is_admin_upload: true,
   };
@@ -864,7 +864,7 @@ async function submitBoardMember() {
   const isEditing = _editing.section === 'board' && _editing.id;
   const payload = {
     role: get('bm-role'), name: get('bm-name'),
-    photo_url: get('bm-photo') || null,
+    photo_url: convertDriveUrl(get('bm-photo')) || null,
     display_order: isEditing
       ? (_store[_editing.id]?.display_order ?? 99)
       : (_boardData.length + 1),
@@ -971,7 +971,7 @@ async function submitSponsor() {
   const payload = {
     name:          get('sp-name'),
     tier:          get('sp-tier') || 'supporter',
-    logo_url:      get('sp-logo') || null,
+    logo_url:      convertDriveUrl(get('sp-logo')) || null,
     website_url:   get('sp-url')  || null,
     display_order: isEditing ? (_store[_editing.id]?.display_order ?? 99) : (_sponsorData.length + 1),
   };
@@ -1195,6 +1195,13 @@ function formatDateRange(start, end) {
 }
 function get(id) { return (document.getElementById(id).value || '').trim(); }
 function set(id, val) { document.getElementById(id).value = val ?? ''; }
+
+function convertDriveUrl(url) {
+  if (!url || !url.includes('drive.google.com')) return url;
+  const m = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  return m ? `https://lh3.googleusercontent.com/d/${m[1]}` : url;
+}
+
 function clearFields(textIds, selectIds = []) {
   textIds.forEach(id => { document.getElementById(id).value = ''; });
   selectIds.forEach(id => { document.getElementById(id).value = ''; });
