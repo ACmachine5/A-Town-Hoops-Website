@@ -70,7 +70,9 @@ async function loadHomePage() {
 async function loadAnnouncements() {
   const section   = document.getElementById('home-announcements-section');
   const container = document.getElementById('home-announcements');
+  const today = new Date().toISOString().split('T')[0];
   const { data }  = await db.from('announcements').select('*').eq('is_published', true)
+    .or(`expires_at.is.null,expires_at.gte.${today}`)
     .order('published_at', { ascending: false }).limit(3);
 
   if (!data || !data.length) { section.classList.add('section-hidden'); return; }
@@ -104,7 +106,8 @@ async function loadUpcomingEvents() {
         </div>
         <div class="event-info">
           <div class="event-title">${typeIcon[e.event_type] || '📌'} ${e.title}</div>
-          ${e.event_time  ? `<div class="event-meta">${e.event_time}</div>` : ''}
+          ${(e.event_time || e.end_time) ? `<div class="event-meta">${e.event_time || ''}${e.end_time ? ' – ' + e.end_time : ''}</div>` : ''}
+          ${e.end_date && e.end_date !== e.event_date ? `<div class="event-meta">📅 Through ${formatDate(e.end_date)}</div>` : ''}
           ${e.location    ? `<div class="event-meta">📍 ${e.location}</div>` : ''}
           ${e.team        ? `<div class="event-meta">👥 ${e.team}</div>` : ''}
           ${e.description ? `<div class="event-desc">${e.description}</div>` : ''}
@@ -174,7 +177,8 @@ async function loadSchedulePage() {
             <div class="schedule-event-col">
               <div class="schedule-event-title">${typeIcon[e.event_type] || '📌'} ${e.title}</div>
               <div class="schedule-event-meta">
-                ${e.event_time ? `<span>${e.event_time}</span>` : ''}
+                ${e.end_date && e.end_date !== e.event_date ? `<span>📅 ${formatDateRange(e.event_date, e.end_date)}</span>` : ''}
+                ${(e.event_time || e.end_time) ? `<span>🕐 ${e.event_time || ''}${e.end_time ? ' – ' + e.end_time : ''}</span>` : ''}
                 ${e.location   ? `<span>📍 ${e.location}</span>` : ''}
                 ${e.team       ? `<span>👥 ${e.team}</span>` : ''}
               </div>
@@ -355,6 +359,7 @@ function startEdit(section, id) {
     },
     announcements: () => {
       set('an-title', item.title); set('an-date', item.published_at);
+      set('an-expires', item.expires_at || '');
       document.getElementById('an-published').checked = item.is_published;
       quillAnnouncements.clipboard.dangerouslyPasteHTML(item.body || '');
     },
@@ -363,9 +368,10 @@ function startEdit(section, id) {
       set('tm-age', item.age_range || ''); set('tm-league', item.league || ''); set('tm-season', item.season || '');
     },
     events: () => {
-      set('ev-title', item.title); set('ev-type', item.event_type); set('ev-date', item.event_date);
-      set('ev-time', item.event_time || ''); set('ev-location', item.location || '');
-      set('ev-team', item.team || '');
+      set('ev-title', item.title); set('ev-type', item.event_type);
+      set('ev-date', item.event_date); set('ev-end-date', item.end_date || '');
+      set('ev-time', item.event_time || ''); set('ev-end-time', item.end_time || '');
+      set('ev-location', item.location || ''); set('ev-team', item.team || '');
       quillEvent.clipboard.dangerouslyPasteHTML(item.description || '');
     },
     gallery: () => {
@@ -391,9 +397,9 @@ function cancelEdit(section) {
 
   const clearers = {
     trophy:        () => { clearFields(['ap-date','ap-title','ap-team','ap-photo'], ['ap-type']); quillTrophy.setText(''); },
-    announcements: () => { clearFields(['an-title','an-date']); document.getElementById('an-published').checked = true; quillAnnouncements.setText(''); },
+    announcements: () => { clearFields(['an-title','an-date','an-expires']); document.getElementById('an-published').checked = true; quillAnnouncements.setText(''); },
     teams:         () => clearFields(['tm-coach','tm-age','tm-league','tm-season'], ['tm-grade','tm-gender']),
-    events:        () => { clearFields(['ev-title','ev-date','ev-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
+    events:        () => { clearFields(['ev-title','ev-date','ev-end-date','ev-time','ev-end-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
     gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
     board:         () => clearFields(['bm-role','bm-name','bm-order']),
   };
@@ -429,6 +435,7 @@ async function submitAnnouncement() {
   const payload = {
     title: get('an-title'), body: quillHTML(quillAnnouncements) || '',
     published_at: get('an-date') || new Date().toISOString().split('T')[0],
+    expires_at:   get('an-expires') || null,
     is_published: document.getElementById('an-published').checked,
   };
   if (!payload.title || !payload.body) { alert('Title and body are required.'); return; }
@@ -522,7 +529,9 @@ async function submitRosterPlayer() {
 async function submitEvent() {
   const payload = {
     title: get('ev-title'), event_type: get('ev-type'), event_date: get('ev-date'),
-    event_time: get('ev-time') || null, location: get('ev-location') || null,
+    end_date: get('ev-end-date') || null,
+    event_time: get('ev-time') || null, end_time: get('ev-end-time') || null,
+    location: get('ev-location') || null,
     team: get('ev-team') || null, description: quillHTML(quillEvent),
   };
   if (!payload.title || !payload.event_type || !payload.event_date) { alert('Title, Type, and Date are required.'); return; }
@@ -684,6 +693,16 @@ function submitForm() {
 /* ── UTILS ── */
 function formatDate(d) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+function formatDateRange(start, end) {
+  const s = new Date(start + 'T00:00:00');
+  const e = end ? new Date(end + 'T00:00:00') : null;
+  if (!e || start === end) return formatDate(start);
+  const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
+  if (sameMonth) {
+    return s.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '–' + e.getDate() + ', ' + e.getFullYear();
+  }
+  return s.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' – ' + e.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 function get(id) { return (document.getElementById(id).value || '').trim(); }
 function set(id, val) { document.getElementById(id).value = val ?? ''; }

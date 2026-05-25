@@ -490,8 +490,9 @@
             <div class="f-row f-row--editor"><label>Body</label><div id="an-body-editor" class="rich-editor"></div></div>
             <div class="admin-two-col">
               <div class="f-row"><label for="an-date">Publish Date</label><input type="date" id="an-date" /></div>
-              <div class="f-row f-row--check"><label for="an-published">Visible on site</label><input type="checkbox" id="an-published" checked /></div>
+              <div class="f-row"><label for="an-expires">Expiry Date <span class="label-optional">(auto-hides after this date)</span></label><input type="date" id="an-expires" /></div>
             </div>
+            <div class="f-row f-row--check"><label for="an-published">Visible on site</label><input type="checkbox" id="an-published" checked /></div>
             <button type="button" id="an-cancel" class="admin-cancel admin-cancel--hidden" onclick="cancelEdit('announcements')">← Cancel Edit</button><button type="button" class="f-submit" id="an-submit" onclick="submitAnnouncement()">Publish →</button>
           </div>
         </div>
@@ -577,8 +578,12 @@
               </div>
             </div>
             <div class="admin-two-col">
-              <div class="f-row"><label for="ev-date">Date</label><input type="date" id="ev-date" /></div>
+              <div class="f-row"><label for="ev-date">Start Date</label><input type="date" id="ev-date" /></div>
+              <div class="f-row"><label for="ev-end-date">End Date <span class="label-optional">(multi-day events)</span></label><input type="date" id="ev-end-date" /></div>
+            </div>
+            <div class="admin-two-col">
               <div class="f-row"><label for="ev-time">Time <span class="label-optional">(optional)</span></label><input type="text" id="ev-time" placeholder="e.g. 9:00 AM" /></div>
+              <div class="f-row"><label for="ev-end-time">End Time <span class="label-optional">(optional)</span></label><input type="text" id="ev-end-time" placeholder="e.g. 5:00 PM" /></div>
             </div>
             <div class="admin-two-col">
               <div class="f-row"><label for="ev-location">Location <span class="label-optional">(optional)</span></label><input type="text" id="ev-location" placeholder="e.g. AHS Main Gym" /></div>
