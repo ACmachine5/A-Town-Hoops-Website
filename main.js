@@ -341,6 +341,7 @@ async function loadBoardMembers() {
   if (error || !data.length) { container.innerHTML = '<p class="trophy-state">Could not load board.</p>'; return; }
   container.innerHTML = data.map(m => `
     <div class="board-cell">
+      ${m.photo_url ? `<img src="${m.photo_url}" alt="${m.name}" class="board-photo" loading="lazy" />` : ''}
       <div class="board-role">${m.role}</div>
       <div class="board-name">${m.name}</div>
     </div>`).join('');
@@ -423,7 +424,7 @@ function startEdit(section, id) {
       set('gl-team', item.team || ''); set('gl-date', item.event_date || '');
     },
     board: () => {
-      set('bm-role', item.role); set('bm-name', item.name); set('bm-order', item.display_order || '');
+      set('bm-role', item.role); set('bm-name', item.name); set('bm-photo', item.photo_url || '');
     },
   };
 
@@ -445,7 +446,7 @@ function cancelEdit(section) {
     teams:         () => clearFields(['tm-coach','tm-age','tm-league','tm-season'], ['tm-grade','tm-gender']),
     events:        () => { clearFields(['ev-title','ev-date','ev-end-date','ev-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
     gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
-    board:         () => clearFields(['bm-role','bm-name','bm-order']),
+    board:         () => clearFields(['bm-role','bm-name','bm-photo']),
   };
   if (clearers[section]) clearers[section]();
 
@@ -609,9 +610,13 @@ async function loadAdminGallery() {
 
 /* ── ADMIN: BOARD MEMBERS ── */
 async function submitBoardMember() {
+  const isEditing = _editing.section === 'board' && _editing.id;
   const payload = {
     role: get('bm-role'), name: get('bm-name'),
-    display_order: parseInt(get('bm-order')) || 99,
+    photo_url: get('bm-photo') || null,
+    display_order: isEditing
+      ? (_store[_editing.id]?.display_order ?? 99)
+      : (_boardData.length + 1),
   };
   if (!payload.role || !payload.name) { alert('Role and Name are required.'); return; }
   await adminSave('board', 'board_members', payload, 'bm-submit', 'Add Member →', loadAdminBoard);

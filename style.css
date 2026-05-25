@@ -354,6 +354,12 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
 }
 .board-cell { background: var(--white); padding: 22px 24px; transition: background .2s; }
 .board-cell:hover { background: var(--sand); }
+.board-photo {
+  width: 72px; height: 72px;
+  border-radius: 50%; object-fit: cover; display: block;
+  margin-bottom: 14px;
+  border: 2px solid var(--rule);
+}
 .board-role {
   font-family: 'Oswald', sans-serif;
   font-weight: 400; font-size: 0.62rem; letter-spacing: 0.16em;
