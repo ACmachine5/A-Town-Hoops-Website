@@ -108,11 +108,11 @@ h1.display, h2.display {
   letter-spacing: 0.01em;
 }
 h1.display { font-size: clamp(3.2rem, 7vw, 6.5rem); }
-h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
+h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); margin-bottom: 16px; }
 
 .lead {
-  font-size: 1.08rem; line-height: 1.8; color: var(--muted);
-  font-weight: 300; max-width: 560px;
+  font-size: 1.08rem; line-height: 1.8; color: #576071;
+  font-weight: 400; max-width: 560px;
 }
 
 .rule-gold {
@@ -249,7 +249,7 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   font-weight: 700; font-size: 3rem; color: var(--gold);
   line-height: 1; letter-spacing: -0.02em;
 }
-.stat-desc    { font-size: 0.82rem; color: rgba(255,255,255,.5); font-weight: 300; margin-top: 3px; }
+.stat-desc    { font-size: 0.82rem; color: rgba(255,255,255,.68); font-weight: 300; margin-top: 3px; }
 
 .feeder-callout {
   margin-top: 28px;
@@ -273,12 +273,12 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   letter-spacing: 0.03em;
 }
 .feeder-callout-desc {
-  font-size: 0.78rem; color: rgba(255,255,255,.55);
-  line-height: 1.5; margin-top: 4px;
+  font-size: 0.78rem; color: rgba(255,255,255,.72);
+  line-height: 1.6; margin-top: 4px;
 }
 
 /* ── CONTENT SECTIONS ── */
-.content-section         { padding: 72px 72px; }
+.content-section         { padding: 72px max(72px, calc((100% - 1100px) / 2)); }
 .content-section.cream   { background: var(--cream); }
 .content-section.sand    { background: var(--sand); }
 .content-section.linen   { background: var(--linen); }
@@ -310,7 +310,7 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   text-transform: uppercase; color: var(--navy);
   letter-spacing: 0.04em; margin-bottom: 14px;
 }
-.pillar-item p { font-size: 0.92rem; line-height: 1.7; color: var(--muted); font-weight: 300; }
+.pillar-item p { font-size: 0.95rem; line-height: 1.75; color: var(--muted); font-weight: 400; }
 
 /* ── TWO-COL ── */
 .two-col      { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
@@ -341,8 +341,8 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   line-height: 1.45; margin-bottom: 28px; position: relative; z-index: 1;
 }
 .about-card-body {
-  font-size: 0.88rem; color: rgba(255,255,255,.55);
-  line-height: 1.7; font-weight: 300; position: relative; z-index: 1;
+  font-size: 0.9rem; color: rgba(255,255,255,.78);
+  line-height: 1.75; font-weight: 300; position: relative; z-index: 1;
 }
 
 /* ── BOARD ── */
@@ -352,7 +352,7 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   border: 1px solid var(--rule); border-radius: 4px;
   overflow: hidden; margin-top: 48px;
 }
-.board-cell { background: var(--white); padding: 22px 24px; transition: background .2s; }
+.board-cell { background: var(--white); padding: 26px 28px; transition: background .2s; }
 .board-cell:hover { background: var(--sand); }
 .board-photo {
   width: 72px; height: 72px;
@@ -372,7 +372,7 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
 
 /* ── TEAMS ── */
 .teams-header-section {
-  background: var(--sand); padding: 80px 72px 0;
+  background: var(--sand); padding: 80px max(72px, calc((100% - 1100px) / 2)) 0;
   border-bottom: 1px solid var(--rule);
 }
 .team-tabs { display: flex; gap: 0; margin-top: 48px; }
@@ -525,7 +525,7 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
   font-size: 0.85rem; color: var(--muted); margin-bottom: 14px;
   font-family: 'Oswald', sans-serif; letter-spacing: 0.06em; text-transform: uppercase;
 }
-.trophy-post-desc  { font-size: 0.95rem; line-height: 1.7; color: var(--ink); max-width: 680px; }
+.trophy-post-desc  { font-size: 0.97rem; line-height: 1.78; color: var(--ink); max-width: 680px; }
 .trophy-post-photo {
   margin-top: 20px; width: 100%; max-width: 640px;
   border-radius: 4px; display: block;
@@ -714,8 +714,8 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
 .f-row label {
   display: block;
   font-family: 'Oswald', sans-serif;
-  font-weight: 400; font-size: 0.65rem; letter-spacing: 0.15em;
-  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+  font-weight: 400; font-size: 0.7rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
 }
 .f-row input,
 .f-row textarea,
@@ -743,7 +743,7 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
 
 /* ── INNER PAGE HEADERS ── */
 .page-header {
-  background: var(--sand); padding: 60px 72px 48px;
+  background: var(--sand); padding: 60px max(72px, calc((100% - 1100px) / 2)) 48px;
   border-bottom: 1px solid var(--rule);
 }
 
@@ -765,20 +765,20 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); }
 .win-sub { font-size: 0.84rem; color: var(--muted); font-weight: 300; }
 
 /* ── CTA BAND ── */
-.cta-band { background: var(--navy); padding: 64px 72px; text-align: center; }
+.cta-band { background: var(--navy); padding: 64px max(72px, calc((100% - 1100px) / 2)); text-align: center; }
 .cta-band h2 {
   font-family: 'Oswald', sans-serif;
   font-weight: 700; font-size: clamp(2rem, 4vw, 3.2rem);
   text-transform: uppercase; color: var(--white);
   letter-spacing: 0.03em; margin-bottom: 14px;
 }
-.cta-band p      { font-size: .98rem; color: rgba(255,255,255,.55); font-weight: 300; margin-bottom: 36px; }
+.cta-band p      { font-size: .98rem; color: rgba(255,255,255,.75); font-weight: 300; margin-bottom: 36px; }
 .cta-band-btns   { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
 /* ── FOOTER ── */
 footer {
   background: var(--sand); border-top: 1px solid var(--rule);
-  padding: 60px 72px 36px;
+  padding: 60px max(72px, calc((100% - 1100px) / 2)) 36px;
 }
 .footer-top {
   display: grid; grid-template-columns: 1.6fr 1fr 1fr;
@@ -970,7 +970,7 @@ footer {
 .announcement-card:hover { box-shadow: 0 4px 16px rgba(13,35,64,.1); }
 .announcement-date  { font-family: 'Oswald', sans-serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
 .announcement-title { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 1.1rem; color: var(--navy); margin-bottom: 8px; }
-.announcement-body  { font-size: 0.9rem; color: var(--ink); line-height: 1.6; }
+.announcement-body  { font-size: 0.95rem; color: var(--ink); line-height: 1.75; }
 
 /* ── EVENTS ── */
 .home-events-list { display: flex; flex-direction: column; gap: 0; margin-top: 8px; }
