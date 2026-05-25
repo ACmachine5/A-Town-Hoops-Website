@@ -509,9 +509,21 @@
           </div>
         </div>
         <div class="content-section cream">
-          <div class="eyebrow">Current Roster</div>
+          <div class="eyebrow">Current Teams</div>
           <h2 class="display admin-section-heading">Teams.</h2>
           <div id="admin-teams-list" class="admin-posts-list"></div>
+        </div>
+        <div class="content-section admin-roster-wrap--hidden" id="admin-roster-wrap">
+          <div class="eyebrow">Roster Manager</div>
+          <h2 class="display admin-section-heading" id="admin-roster-heading">Team Roster.</h2>
+          <div class="admin-form">
+            <div class="admin-two-col">
+              <div class="f-row"><label for="rp-name">Player Name</label><input type="text" id="rp-name" placeholder="e.g. John Smith" /></div>
+              <div class="f-row"><label for="rp-number">Jersey # <span class="label-optional">(optional)</span></label><input type="text" id="rp-number" placeholder="e.g. 23" /></div>
+            </div>
+            <button type="button" class="f-submit" id="rp-submit" onclick="submitRosterPlayer()">Add Player →</button>
+          </div>
+          <div id="admin-roster-list" class="admin-posts-list"></div>
         </div>
       </div>
 

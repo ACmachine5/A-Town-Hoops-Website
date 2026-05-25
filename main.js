@@ -150,24 +150,46 @@ async function loadTeams(gender) {
   container.innerHTML = '<p class="trophy-state">Loading…</p>';
 
   const genderFormatted = gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
-  const { data, error } = await db.from('teams').select('*').eq('gender', genderFormatted)
+  const { data: teams, error } = await db.from('teams').select('*').eq('gender', genderFormatted)
     .order('display_order', { ascending: true });
 
-  if (error || !data.length) { container.innerHTML = '<p class="trophy-state">No teams found.</p>'; return; }
-  container.innerHTML = data.map(t => `
-    <div class="team-card">
-      <div class="team-card-top">
-        <div class="team-card-grade">${t.grade} <span>Grade</span></div>
-        <div class="team-card-label">${t.gender} Basketball</div>
-      </div>
-      <div class="team-card-meta">
-        ${t.age_range ? `<div class="team-card-meta-row"><span class="meta-icon">📅</span> ${t.age_range}</div>` : ''}
-        <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: ${t.coach_name || 'TBD'}</div>
-      </div>
-      <div class="team-card-bottom">
-        ${(t.league || 'AAU · Wesco').split('·').map(l => `<span class="chip">${l.trim()}</span>`).join('')}
-      </div>
-    </div>`).join('');
+  if (error || !teams || !teams.length) { container.innerHTML = '<p class="trophy-state">No teams found.</p>'; return; }
+
+  const teamIds = teams.map(t => t.id);
+  const { data: rosters } = await db.from('rosters').select('*').in('team_id', teamIds).order('player_name', { ascending: true });
+  const rosterMap = {};
+  (rosters || []).forEach(p => {
+    if (!rosterMap[p.team_id]) rosterMap[p.team_id] = [];
+    rosterMap[p.team_id].push(p);
+  });
+
+  container.innerHTML = teams.map(t => {
+    const players = rosterMap[t.id] || [];
+    const rosterHtml = players.length ? `
+      <div class="team-card-roster">
+        <div class="team-roster-label">Roster</div>
+        <div class="team-roster-grid">
+          ${players.map(p => `<span class="team-roster-pill">${p.jersey_number ? `<span class="roster-num">#${p.jersey_number}</span>` : ''}${p.player_name}</span>`).join('')}
+        </div>
+      </div>` : '';
+    return `
+      <div class="team-card">
+        <div class="team-card-top">
+          <div class="team-card-grade">${t.grade} <span>Grade</span></div>
+          <div class="team-card-label">${t.gender} Basketball</div>
+        </div>
+        <div class="team-card-right">
+          <div class="team-card-meta">
+            ${t.age_range ? `<div class="team-card-meta-row"><span class="meta-icon">📅</span> ${t.age_range}</div>` : ''}
+            <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: ${t.coach_name || 'TBD'}</div>
+            <div class="team-card-chips">
+              ${(t.league || 'AAU · Wesco').split('·').map(l => `<span class="chip">${l.trim()}</span>`).join('')}
+            </div>
+          </div>
+          ${rosterHtml}
+        </div>
+      </div>`;
+  }).join('');
 }
 
 /* ── GALLERY (public) ── */
@@ -358,9 +380,68 @@ async function submitTeam() {
 
 async function loadAdminTeams() {
   const { data } = await db.from('teams').select('*').order('gender').order('display_order');
-  renderAdminList('admin-teams-list', 'teams', data,
-    t => `<span class="admin-post-date">${t.gender}</span><span class="admin-post-title-text">${t.grade} Grade</span><span class="admin-post-team">Coach: ${t.coach_name || 'TBD'}</span>`,
-    'teams', loadAdminTeams);
+  const list = document.getElementById('admin-teams-list');
+  if (!data || !data.length) { list.innerHTML = '<p class="admin-state">No teams yet.</p>'; return; }
+  data.forEach(item => { _store[item.id] = item; });
+  list.innerHTML = data.map(t => `
+    <div class="admin-post-row">
+      <div class="admin-post-info">
+        <span class="admin-post-date">${t.gender}</span>
+        <span class="admin-post-title-text">${t.grade} Grade</span>
+        <span class="admin-post-team">Coach: ${t.coach_name || 'TBD'}</span>
+      </div>
+      <div class="admin-row-actions">
+        <button type="button" class="admin-edit-btn" onclick="openRosterManager('${t.id}', '${t.grade} ${t.gender}')">Roster</button>
+        <button type="button" class="admin-edit-btn" onclick="startEdit('teams', '${t.id}')">Edit</button>
+        <button type="button" class="admin-delete-btn" onclick="adminDelete('teams', '${t.id}', loadAdminTeams)">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+/* ── ROSTER MANAGEMENT ── */
+let _rosterTeamId = null;
+
+function openRosterManager(teamId, teamName) {
+  _rosterTeamId = teamId;
+  document.getElementById('admin-roster-heading').textContent = teamName + ' — Roster.';
+  const wrap = document.getElementById('admin-roster-wrap');
+  wrap.classList.remove('admin-roster-wrap--hidden');
+  wrap.scrollIntoView({ behavior: 'smooth' });
+  loadAdminRoster();
+}
+
+async function loadAdminRoster() {
+  if (!_rosterTeamId) return;
+  const { data } = await db.from('rosters').select('*').eq('team_id', _rosterTeamId).order('player_name', { ascending: true });
+  const list = document.getElementById('admin-roster-list');
+  if (!data || !data.length) { list.innerHTML = '<p class="admin-state">No players yet — add one above.</p>'; return; }
+  list.innerHTML = data.map(p => `
+    <div class="admin-post-row">
+      <div class="admin-post-info">
+        ${p.jersey_number ? `<span class="admin-post-date">#${p.jersey_number}</span>` : ''}
+        <span class="admin-post-title-text">${p.player_name}</span>
+      </div>
+      <div class="admin-row-actions">
+        <button type="button" class="admin-delete-btn" onclick="adminDelete('rosters', '${p.id}', loadAdminRoster)">Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+async function submitRosterPlayer() {
+  if (!_rosterTeamId) return;
+  const name = get('rp-name');
+  if (!name) { alert('Player name is required.'); return; }
+  const btn = document.getElementById('rp-submit');
+  btn.textContent = 'Saving…'; btn.disabled = true;
+  const { error } = await db.from('rosters').insert({
+    team_id: _rosterTeamId, player_name: name, jersey_number: get('rp-number') || null,
+  });
+  btn.textContent = 'Add Player →'; btn.disabled = false;
+  if (error) { alert('Error: ' + error.message); return; }
+  document.getElementById('rp-name').value = '';
+  document.getElementById('rp-number').value = '';
+  showToast('✓ Player added.');
+  loadAdminRoster();
 }
 
 /* ── ADMIN: EVENTS ── */
