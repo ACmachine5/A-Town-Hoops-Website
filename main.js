@@ -212,7 +212,7 @@ function showAdminPage() {
   if (isAdminAuthed()) {
     gate.style.display = 'none';
     dashboard.classList.remove('admin-dashboard--hidden');
-    loadAdminPosts();
+    loadAdminAnnouncements();
   } else {
     gate.style.display      = 'block';
     dashboard.classList.add('admin-dashboard--hidden');
