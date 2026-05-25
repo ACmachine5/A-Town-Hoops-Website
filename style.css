@@ -859,3 +859,24 @@ footer {
 /* ── ADMIN FORM CHECKBOX ROW ── */
 .f-row--check { flex-direction: row; align-items: center; gap: 12px; padding-top: 28px; }
 .f-row--check input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--navy); }
+
+/* ── ADMIN EDIT / CANCEL ── */
+.admin-row-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.admin-edit-btn {
+  background: transparent; border: 1px solid rgba(255,255,255,.3);
+  color: rgba(255,255,255,.75); font-family: 'Oswald', sans-serif;
+  font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 2px; cursor: pointer; transition: all .15s;
+}
+.admin-edit-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.admin-cancel {
+  background: transparent; border: 1px solid rgba(255,255,255,.25);
+  color: rgba(255,255,255,.6); font-family: 'Oswald', sans-serif;
+  font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 7px 16px; border-radius: 2px; cursor: pointer; transition: all .15s;
+  margin-bottom: 12px;
+}
+.admin-cancel:hover { border-color: rgba(255,255,255,.6); color: var(--white); }
+.admin-cancel--hidden { display: none; }

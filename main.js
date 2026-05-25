@@ -9,6 +9,15 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const ADMIN_PASSWORD = 'Atownhoops';
 
+/* ── EDIT STATE ── */
+let _editing = { section: null, id: null };
+const _store  = {}; // id → cached row for edit population
+
+const SUBMIT_LABELS = {
+  trophy: 'Publish Entry →', announcements: 'Publish →', teams: 'Save Team →',
+  events: 'Add Event →',    gallery: 'Add Photo →',      board: 'Add Member →',
+};
+
 /* ── PAGE NAVIGATION ── */
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -40,75 +49,58 @@ async function loadHomePage() {
 }
 
 async function loadAnnouncements() {
-  const section = document.getElementById('home-announcements-section');
+  const section   = document.getElementById('home-announcements-section');
   const container = document.getElementById('home-announcements');
-
-  const { data } = await db
-    .from('announcements')
-    .select('*')
-    .eq('is_published', true)
-    .order('published_at', { ascending: false })
-    .limit(3);
+  const { data }  = await db.from('announcements').select('*').eq('is_published', true)
+    .order('published_at', { ascending: false }).limit(3);
 
   if (!data || !data.length) { section.classList.add('section-hidden'); return; }
-
   section.classList.remove('section-hidden');
   container.innerHTML = data.map(a => `
     <div class="announcement-card">
       <div class="announcement-date">${formatDate(a.published_at)}</div>
       <h3 class="announcement-title">${a.title}</h3>
       <p class="announcement-body">${a.body}</p>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 async function loadUpcomingEvents() {
-  const section = document.getElementById('home-events-section');
+  const section   = document.getElementById('home-events-section');
   const container = document.getElementById('home-events');
-  const today = new Date().toISOString().split('T')[0];
-
-  const { data } = await db
-    .from('events')
-    .select('*')
-    .gte('event_date', today)
-    .order('event_date', { ascending: true })
-    .limit(5);
+  const today     = new Date().toISOString().split('T')[0];
+  const { data }  = await db.from('events').select('*').gte('event_date', today)
+    .order('event_date', { ascending: true }).limit(5);
 
   if (!data || !data.length) { section.classList.add('section-hidden'); return; }
-
   section.classList.remove('section-hidden');
-  const typeIcon = { tryout: '📋', tournament: '🏆', game: '🏀', practice: '🎯', other: '📌' };
 
-  container.innerHTML = data.map(e => `
-    <div class="event-row">
-      <div class="event-date-block">
-        <div class="event-month">${new Date(e.event_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short' })}</div>
-        <div class="event-day">${new Date(e.event_date + 'T00:00:00').getDate()}</div>
-      </div>
-      <div class="event-info">
-        <div class="event-title">${typeIcon[e.event_type] || '📌'} ${e.title}</div>
-        ${e.event_time   ? `<div class="event-meta">${e.event_time}</div>` : ''}
-        ${e.location     ? `<div class="event-meta">📍 ${e.location}</div>` : ''}
-        ${e.team         ? `<div class="event-meta">👥 ${e.team}</div>` : ''}
-        ${e.description  ? `<div class="event-desc">${e.description}</div>` : ''}
-      </div>
-    </div>
-  `).join('');
+  const typeIcon = { tryout: '📋', tournament: '🏆', game: '🏀', practice: '🎯', other: '📌' };
+  container.innerHTML = data.map(e => {
+    const d = new Date(e.event_date + 'T00:00:00');
+    return `
+      <div class="event-row">
+        <div class="event-date-block">
+          <div class="event-month">${d.toLocaleDateString('en-US', { month: 'short' })}</div>
+          <div class="event-day">${d.getDate()}</div>
+        </div>
+        <div class="event-info">
+          <div class="event-title">${typeIcon[e.event_type] || '📌'} ${e.title}</div>
+          ${e.event_time  ? `<div class="event-meta">${e.event_time}</div>` : ''}
+          ${e.location    ? `<div class="event-meta">📍 ${e.location}</div>` : ''}
+          ${e.team        ? `<div class="event-meta">👥 ${e.team}</div>` : ''}
+          ${e.description ? `<div class="event-desc">${e.description}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
 }
 
 /* ── TROPHY CASE ── */
 async function loadTrophyPosts() {
   const container = document.getElementById('trophy-list');
   container.innerHTML = '<p class="trophy-state">Loading…</p>';
-
-  const { data, error } = await db
-    .from('trophy_posts')
-    .select('*')
-    .order('date', { ascending: false });
-
+  const { data, error } = await db.from('trophy_posts').select('*').order('date', { ascending: false });
   if (error) { container.innerHTML = '<p class="trophy-state">Could not load entries.</p>'; return; }
   if (!data.length) { container.innerHTML = '<p class="trophy-state">No entries yet — check back soon.</p>'; return; }
-
   container.innerHTML = data.map(renderTrophyPost).join('');
 }
 
@@ -133,20 +125,17 @@ function renderTrophyPost(post) {
     </article>`;
 }
 
-/* ── TEAMS ── */
+/* ── TEAMS (public) ── */
 async function loadTeams(gender) {
-  const id = gender.toLowerCase() === 'boys' ? 'boys-cards' : 'girls-cards';
+  const id        = gender.toLowerCase() === 'boys' ? 'boys-cards' : 'girls-cards';
   const container = document.getElementById(id);
   container.innerHTML = '<p class="trophy-state">Loading…</p>';
 
-  const { data, error } = await db
-    .from('teams')
-    .select('*')
-    .eq('gender', gender.charAt(0).toUpperCase() + gender.slice(1))
+  const genderFormatted = gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase();
+  const { data, error } = await db.from('teams').select('*').eq('gender', genderFormatted)
     .order('display_order', { ascending: true });
 
   if (error || !data.length) { container.innerHTML = '<p class="trophy-state">No teams found.</p>'; return; }
-
   container.innerHTML = data.map(t => `
     <div class="team-card">
       <div class="team-card-top">
@@ -154,7 +143,7 @@ async function loadTeams(gender) {
         <div class="team-card-label">${t.gender} Basketball</div>
       </div>
       <div class="team-card-meta">
-        ${t.age_range  ? `<div class="team-card-meta-row"><span class="meta-icon">📅</span> ${t.age_range}</div>` : ''}
+        ${t.age_range ? `<div class="team-card-meta-row"><span class="meta-icon">📅</span> ${t.age_range}</div>` : ''}
         <div class="team-card-meta-row"><span class="meta-icon">👤</span> Coach: ${t.coach_name || 'TBD'}</div>
       </div>
       <div class="team-card-bottom">
@@ -163,43 +152,32 @@ async function loadTeams(gender) {
     </div>`).join('');
 }
 
-/* ── GALLERY ── */
+/* ── GALLERY (public) ── */
 async function loadGallery() {
   const container = document.getElementById('gallery-grid');
   const emptyNote = document.getElementById('gallery-empty-note');
   container.innerHTML = '<p class="trophy-state">Loading…</p>';
 
-  const { data, error } = await db
-    .from('gallery_items')
-    .select('*')
-    .order('created_at', { ascending: false });
-
+  const { data, error } = await db.from('gallery_items').select('*').order('created_at', { ascending: false });
   if (error || !data || !data.length) {
     container.innerHTML = '';
     emptyNote.style.display = 'block';
     return;
   }
-
   emptyNote.style.display = 'none';
   container.innerHTML = data.map((item, i) => `
     <div class="g-item ${i === 0 ? 'g-item--featured' : ''}">
       <img src="${item.photo_url}" alt="${item.caption || 'A-Town Hoops'}" loading="lazy" class="g-img" />
-      ${item.caption ? `<div class="g-caption">${item.caption}${item.team ? ` · ${item.team}` : ''}</div>` : ''}
+      ${item.caption ? `<div class="g-caption">${item.caption}${item.team ? ' · ' + item.team : ''}</div>` : ''}
     </div>`).join('');
 }
 
-/* ── BOARD MEMBERS ── */
+/* ── BOARD MEMBERS (public) ── */
 async function loadBoardMembers() {
   const container = document.getElementById('board-grid');
   container.innerHTML = '<p class="trophy-state">Loading…</p>';
-
-  const { data, error } = await db
-    .from('board_members')
-    .select('*')
-    .order('display_order', { ascending: true });
-
+  const { data, error } = await db.from('board_members').select('*').order('display_order', { ascending: true });
   if (error || !data.length) { container.innerHTML = '<p class="trophy-state">Could not load board.</p>'; return; }
-
   container.innerHTML = data.map(m => `
     <div class="board-cell">
       <div class="board-role">${m.role}</div>
@@ -218,7 +196,7 @@ function showAdminPage() {
     dashboard.classList.remove('admin-dashboard--hidden');
     loadAdminPosts();
   } else {
-    gate.style.display = 'block';
+    gate.style.display      = 'block';
     dashboard.classList.add('admin-dashboard--hidden');
   }
 }
@@ -242,165 +220,198 @@ function switchAdminTab(tab, btn) {
   document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('atab-' + tab).classList.add('active');
   btn.classList.add('active');
-
   const loaders = {
-    trophy:        loadAdminPosts,
-    announcements: loadAdminAnnouncements,
-    teams:         loadAdminTeams,
-    events:        loadAdminEvents,
-    gallery:       loadAdminGallery,
-    board:         loadAdminBoard,
+    trophy: loadAdminPosts, announcements: loadAdminAnnouncements, teams: loadAdminTeams,
+    events: loadAdminEvents, gallery: loadAdminGallery, board: loadAdminBoard,
   };
   if (loaders[tab]) loaders[tab]();
 }
 
+/* ── EDIT MODE ── */
+function startEdit(section, id) {
+  const item = _store[id];
+  if (!item) return;
+  _editing = { section, id };
+
+  const populators = {
+    trophy: () => {
+      set('ap-date', item.date); set('ap-title', item.title); set('ap-team', item.team);
+      set('ap-type', item.achievement_type); set('ap-desc', item.description || '');
+      set('ap-photo', item.photo_url || '');
+    },
+    announcements: () => {
+      set('an-title', item.title); set('an-body', item.body); set('an-date', item.published_at);
+      document.getElementById('an-published').checked = item.is_published;
+    },
+    teams: () => {
+      set('tm-grade', item.grade); set('tm-gender', item.gender); set('tm-coach', item.coach_name || '');
+      set('tm-age', item.age_range || ''); set('tm-league', item.league || ''); set('tm-season', item.season || '');
+    },
+    events: () => {
+      set('ev-title', item.title); set('ev-type', item.event_type); set('ev-date', item.event_date);
+      set('ev-time', item.event_time || ''); set('ev-location', item.location || '');
+      set('ev-team', item.team || ''); set('ev-desc', item.description || '');
+    },
+    gallery: () => {
+      set('gl-url', item.photo_url); set('gl-caption', item.caption || '');
+      set('gl-team', item.team || ''); set('gl-date', item.event_date || '');
+    },
+    board: () => {
+      set('bm-role', item.role); set('bm-name', item.name); set('bm-order', item.display_order || '');
+    },
+  };
+
+  if (populators[section]) populators[section]();
+
+  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm' };
+  const p = prefix[section];
+  document.getElementById(p + '-submit').textContent = 'Update →';
+  document.getElementById(p + '-cancel').classList.remove('admin-cancel--hidden');
+  document.getElementById('atab-' + section).scrollIntoView({ behavior: 'smooth' });
+}
+
+function cancelEdit(section) {
+  _editing = { section: null, id: null };
+
+  const clearers = {
+    trophy:        () => clearFields(['ap-date','ap-title','ap-team','ap-desc','ap-photo'], ['ap-type']),
+    announcements: () => { clearFields(['an-title','an-body','an-date']); document.getElementById('an-published').checked = true; },
+    teams:         () => clearFields(['tm-coach','tm-age','tm-league','tm-season'], ['tm-grade','tm-gender']),
+    events:        () => clearFields(['ev-title','ev-date','ev-time','ev-location','ev-team','ev-desc'], ['ev-type']),
+    gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
+    board:         () => clearFields(['bm-role','bm-name','bm-order']),
+  };
+  if (clearers[section]) clearers[section]();
+
+  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm' };
+  const p = prefix[section];
+  document.getElementById(p + '-submit').textContent = SUBMIT_LABELS[section];
+  document.getElementById(p + '-cancel').classList.add('admin-cancel--hidden');
+}
+
 /* ── ADMIN: TROPHY CASE ── */
 async function submitTrophyPost() {
-  const date = document.getElementById('ap-date').value;
-  const title = document.getElementById('ap-title').value.trim();
-  const team  = document.getElementById('ap-team').value.trim();
-  const type  = document.getElementById('ap-type').value;
-  const desc  = document.getElementById('ap-desc').value.trim();
-  const photo = document.getElementById('ap-photo').value.trim();
-
-  if (!date || !title || !team || !type) { alert('Date, Title, Team, and Type are required.'); return; }
-
-  await adminInsert('trophy_posts', { date, title, team, achievement_type: type, description: desc || null, photo_url: photo || null },
-    ['ap-date','ap-title','ap-team','ap-desc','ap-photo'], 'ap-type', 'ap-submit', 'Publish Entry →', loadAdminPosts);
+  const payload = {
+    date: get('ap-date'), title: get('ap-title'), team: get('ap-team'),
+    achievement_type: get('ap-type'), description: get('ap-desc') || null, photo_url: get('ap-photo') || null,
+  };
+  if (!payload.date || !payload.title || !payload.team || !payload.achievement_type) {
+    alert('Date, Title, Team, and Type are required.'); return;
+  }
+  await adminSave('trophy', 'trophy_posts', payload, 'ap-submit', 'Publish Entry →', loadAdminPosts);
 }
 
 async function loadAdminPosts() {
   const { data } = await db.from('trophy_posts').select('*').order('date', { ascending: false });
-  renderAdminList('admin-posts-list', data, p =>
-    `<span class="admin-post-date">${p.date}</span><span class="admin-post-title-text">${p.title}</span><span class="admin-post-team">${p.team}</span>`,
-    id => deleteTrophyPost(id));
-}
-
-async function deleteTrophyPost(id) {
-  await adminDelete('trophy_posts', id, loadAdminPosts);
+  renderAdminList('admin-posts-list', 'trophy', data,
+    p => `<span class="admin-post-date">${p.date}</span><span class="admin-post-title-text">${p.title}</span><span class="admin-post-team">${p.team}</span>`,
+    'trophy_posts', loadAdminPosts);
 }
 
 /* ── ADMIN: ANNOUNCEMENTS ── */
 async function submitAnnouncement() {
-  const title = document.getElementById('an-title').value.trim();
-  const body  = document.getElementById('an-body').value.trim();
-  const date  = document.getElementById('an-date').value || new Date().toISOString().split('T')[0];
-  const pub   = document.getElementById('an-published').checked;
-
-  if (!title || !body) { alert('Title and body are required.'); return; }
-
-  await adminInsert('announcements', { title, body, published_at: date, is_published: pub },
-    ['an-title','an-body','an-date'], null, 'an-submit', 'Publish →', loadAdminAnnouncements);
+  const payload = {
+    title: get('an-title'), body: get('an-body'),
+    published_at: get('an-date') || new Date().toISOString().split('T')[0],
+    is_published: document.getElementById('an-published').checked,
+  };
+  if (!payload.title || !payload.body) { alert('Title and body are required.'); return; }
+  await adminSave('announcements', 'announcements', payload, 'an-submit', 'Publish →', loadAdminAnnouncements);
 }
 
 async function loadAdminAnnouncements() {
   const { data } = await db.from('announcements').select('*').order('published_at', { ascending: false });
-  renderAdminList('admin-announcements-list', data, a =>
-    `<span class="admin-post-date">${a.published_at}</span><span class="admin-post-title-text">${a.title}</span><span class="admin-post-team">${a.is_published ? 'Visible' : 'Hidden'}</span>`,
-    id => adminDelete('announcements', id, loadAdminAnnouncements));
+  renderAdminList('admin-announcements-list', 'announcements', data,
+    a => `<span class="admin-post-date">${a.published_at}</span><span class="admin-post-title-text">${a.title}</span><span class="admin-post-team">${a.is_published ? 'Visible' : 'Hidden'}</span>`,
+    'announcements', loadAdminAnnouncements);
 }
 
 /* ── ADMIN: TEAMS ── */
 async function submitTeam() {
-  const grade  = document.getElementById('tm-grade').value;
-  const gender = document.getElementById('tm-gender').value;
-  const coach  = document.getElementById('tm-coach').value.trim();
-  const age    = document.getElementById('tm-age').value.trim();
-  const league = document.getElementById('tm-league').value.trim();
-  const season = document.getElementById('tm-season').value.trim();
-
-  if (!grade || !gender) { alert('Grade and Program are required.'); return; }
-
-  await adminInsert('teams', { grade, gender, coach_name: coach || null, age_range: age || null, league: league || 'AAU · Wesco', season: season || '25–26' },
-    ['tm-coach','tm-age','tm-league','tm-season'], 'tm-grade', 'tm-submit', 'Save Team →', loadAdminTeams);
-  document.getElementById('tm-gender').value = '';
+  const payload = {
+    grade: get('tm-grade'), gender: get('tm-gender'), coach_name: get('tm-coach') || null,
+    age_range: get('tm-age') || null, league: get('tm-league') || 'AAU · Wesco', season: get('tm-season') || '25–26',
+  };
+  if (!payload.grade || !payload.gender) { alert('Grade and Program are required.'); return; }
+  await adminSave('teams', 'teams', payload, 'tm-submit', 'Save Team →', loadAdminTeams);
 }
 
 async function loadAdminTeams() {
-  const { data } = await db.from('teams').select('*').order('display_order').order('gender').order('grade');
-  renderAdminList('admin-teams-list', data, t =>
-    `<span class="admin-post-date">${t.gender}</span><span class="admin-post-title-text">${t.grade} Grade</span><span class="admin-post-team">Coach: ${t.coach_name || 'TBD'}</span>`,
-    id => adminDelete('teams', id, loadAdminTeams));
+  const { data } = await db.from('teams').select('*').order('gender').order('display_order');
+  renderAdminList('admin-teams-list', 'teams', data,
+    t => `<span class="admin-post-date">${t.gender}</span><span class="admin-post-title-text">${t.grade} Grade</span><span class="admin-post-team">Coach: ${t.coach_name || 'TBD'}</span>`,
+    'teams', loadAdminTeams);
 }
 
 /* ── ADMIN: EVENTS ── */
 async function submitEvent() {
-  const title    = document.getElementById('ev-title').value.trim();
-  const type     = document.getElementById('ev-type').value;
-  const date     = document.getElementById('ev-date').value;
-  const time     = document.getElementById('ev-time').value.trim();
-  const location = document.getElementById('ev-location').value.trim();
-  const team     = document.getElementById('ev-team').value.trim();
-  const desc     = document.getElementById('ev-desc').value.trim();
-
-  if (!title || !type || !date) { alert('Title, Type, and Date are required.'); return; }
-
-  await adminInsert('events', { title, event_type: type, event_date: date, event_time: time || null, location: location || null, team: team || null, description: desc || null },
-    ['ev-title','ev-date','ev-time','ev-location','ev-team','ev-desc'], 'ev-type', 'ev-submit', 'Add Event →', loadAdminEvents);
+  const payload = {
+    title: get('ev-title'), event_type: get('ev-type'), event_date: get('ev-date'),
+    event_time: get('ev-time') || null, location: get('ev-location') || null,
+    team: get('ev-team') || null, description: get('ev-desc') || null,
+  };
+  if (!payload.title || !payload.event_type || !payload.event_date) { alert('Title, Type, and Date are required.'); return; }
+  await adminSave('events', 'events', payload, 'ev-submit', 'Add Event →', loadAdminEvents);
 }
 
 async function loadAdminEvents() {
   const { data } = await db.from('events').select('*').order('event_date', { ascending: true });
-  renderAdminList('admin-events-list', data, e =>
-    `<span class="admin-post-date">${e.event_date}</span><span class="admin-post-title-text">${e.title}</span><span class="admin-post-team">${e.event_type}${e.team ? ' · ' + e.team : ''}</span>`,
-    id => adminDelete('events', id, loadAdminEvents));
+  renderAdminList('admin-events-list', 'events', data,
+    e => `<span class="admin-post-date">${e.event_date}</span><span class="admin-post-title-text">${e.title}</span><span class="admin-post-team">${e.event_type}${e.team ? ' · ' + e.team : ''}</span>`,
+    'events', loadAdminEvents);
 }
 
 /* ── ADMIN: GALLERY ── */
 async function submitGalleryItem() {
-  const url     = document.getElementById('gl-url').value.trim();
-  const caption = document.getElementById('gl-caption').value.trim();
-  const team    = document.getElementById('gl-team').value.trim();
-  const date    = document.getElementById('gl-date').value;
-
-  if (!url) { alert('Photo URL is required.'); return; }
-
-  await adminInsert('gallery_items', { photo_url: url, caption: caption || null, team: team || null, event_date: date || null },
-    ['gl-url','gl-caption','gl-team','gl-date'], null, 'gl-submit', 'Add Photo →', loadAdminGallery);
+  const payload = {
+    photo_url: get('gl-url'), caption: get('gl-caption') || null,
+    team: get('gl-team') || null, event_date: get('gl-date') || null,
+  };
+  if (!payload.photo_url) { alert('Photo URL is required.'); return; }
+  await adminSave('gallery', 'gallery_items', payload, 'gl-submit', 'Add Photo →', loadAdminGallery);
 }
 
 async function loadAdminGallery() {
   const { data } = await db.from('gallery_items').select('*').order('created_at', { ascending: false });
-  renderAdminList('admin-gallery-list', data, g =>
-    `<span class="admin-post-date">${g.event_date || '—'}</span><span class="admin-post-title-text">${g.caption || 'No caption'}</span><span class="admin-post-team">${g.team || ''}</span>`,
-    id => adminDelete('gallery_items', id, loadAdminGallery));
+  renderAdminList('admin-gallery-list', 'gallery', data,
+    g => `<span class="admin-post-date">${g.event_date || '—'}</span><span class="admin-post-title-text">${g.caption || 'No caption'}</span><span class="admin-post-team">${g.team || ''}</span>`,
+    'gallery_items', loadAdminGallery);
 }
 
 /* ── ADMIN: BOARD MEMBERS ── */
 async function submitBoardMember() {
-  const role  = document.getElementById('bm-role').value.trim();
-  const name  = document.getElementById('bm-name').value.trim();
-  const order = parseInt(document.getElementById('bm-order').value) || 99;
-
-  if (!role || !name) { alert('Role and Name are required.'); return; }
-
-  await adminInsert('board_members', { role, name, display_order: order },
-    ['bm-role','bm-name','bm-order'], null, 'bm-submit', 'Add Member →', loadAdminBoard);
+  const payload = {
+    role: get('bm-role'), name: get('bm-name'),
+    display_order: parseInt(get('bm-order')) || 99,
+  };
+  if (!payload.role || !payload.name) { alert('Role and Name are required.'); return; }
+  await adminSave('board', 'board_members', payload, 'bm-submit', 'Add Member →', loadAdminBoard);
 }
 
 async function loadAdminBoard() {
   const { data } = await db.from('board_members').select('*').order('display_order');
-  renderAdminList('admin-board-list', data, m =>
-    `<span class="admin-post-date">#${m.display_order}</span><span class="admin-post-title-text">${m.name}</span><span class="admin-post-team">${m.role}</span>`,
-    id => adminDelete('board_members', id, loadAdminBoard));
+  renderAdminList('admin-board-list', 'board', data,
+    m => `<span class="admin-post-date">#${m.display_order}</span><span class="admin-post-title-text">${m.name}</span><span class="admin-post-team">${m.role}</span>`,
+    'board_members', loadAdminBoard);
 }
 
-/* ── ADMIN HELPERS ── */
-async function adminInsert(table, payload, textFieldIds, selectId, btnId, btnLabel, reloadFn) {
-  const btn = document.getElementById(btnId);
+/* ── ADMIN CORE HELPERS ── */
+async function adminSave(section, table, payload, btnId, defaultLabel, reloadFn) {
+  const btn       = document.getElementById(btnId);
+  const isEditing = _editing.section === section && _editing.id;
+
   btn.textContent = 'Saving…';
-  btn.disabled = true;
+  btn.disabled    = true;
 
-  const { error } = await db.from(table).insert(payload);
+  const { error } = isEditing
+    ? await db.from(table).update(payload).eq('id', _editing.id)
+    : await db.from(table).insert(payload);
 
-  btn.textContent = btnLabel;
-  btn.disabled = false;
+  btn.disabled    = false;
 
-  if (error) { alert('Error: ' + error.message); return; }
+  if (error) { btn.textContent = isEditing ? 'Update →' : defaultLabel; alert('Error: ' + error.message); return; }
 
-  textFieldIds.forEach(id => { document.getElementById(id).value = ''; });
-  if (selectId) document.getElementById(selectId).value = '';
-
+  cancelEdit(section);
   showToast('✓ Saved.');
   reloadFn();
 }
@@ -413,13 +424,17 @@ async function adminDelete(table, id, reloadFn) {
   reloadFn();
 }
 
-function renderAdminList(containerId, data, rowContentFn, deleteFn) {
+function renderAdminList(containerId, section, data, rowContentFn, table, reloadFn) {
   const list = document.getElementById(containerId);
   if (!data || !data.length) { list.innerHTML = '<p class="admin-state">No entries yet.</p>'; return; }
+  data.forEach(item => { _store[item.id] = item; });
   list.innerHTML = data.map(item => `
     <div class="admin-post-row">
       <div class="admin-post-info">${rowContentFn(item)}</div>
-      <button type="button" class="admin-delete-btn" onclick="(${deleteFn.toString()})('${item.id}')">Delete</button>
+      <div class="admin-row-actions">
+        <button type="button" class="admin-edit-btn" onclick="startEdit('${section}', '${item.id}')">Edit</button>
+        <button type="button" class="admin-delete-btn" onclick="adminDelete('${table}', '${item.id}', ${reloadFn.name})">Delete</button>
+      </div>
     </div>`).join('');
 }
 
@@ -450,24 +465,25 @@ function submitForm() {
   const msg   = document.getElementById('cf-message').value.trim();
   if (!name || !email || !msg) { alert('Please fill in your name, email, and message.'); return; }
   showToast('✓ Message sent — we\'ll be in touch soon.');
-  document.getElementById('cf-name').value    = '';
-  document.getElementById('cf-email').value   = '';
-  document.getElementById('cf-message').value = '';
-  document.getElementById('cf-topic').value   = '';
+  ['cf-name','cf-email','cf-message','cf-topic'].forEach(id => { document.getElementById(id).value = ''; });
 }
 
 /* ── UTILS ── */
-function formatDate(dateStr) {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+function formatDate(d) {
+  return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+function get(id) { return (document.getElementById(id).value || '').trim(); }
+function set(id, val) { document.getElementById(id).value = val ?? ''; }
+function clearFields(textIds, selectIds = []) {
+  textIds.forEach(id => { document.getElementById(id).value = ''; });
+  selectIds.forEach(id => { document.getElementById(id).value = ''; });
 }
 
 /* ── CLOSE MENU ON OUTSIDE CLICK ── */
 document.addEventListener('click', e => {
   const nav    = document.getElementById('nav-links');
   const burger = document.getElementById('hamburger');
-  if (nav && burger && !nav.contains(e.target) && !burger.contains(e.target)) {
-    nav.classList.remove('open');
-  }
+  if (nav && burger && !nav.contains(e.target) && !burger.contains(e.target)) nav.classList.remove('open');
 });
 
 /* ── INIT ── */
