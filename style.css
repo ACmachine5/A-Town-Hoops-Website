@@ -991,8 +991,19 @@ footer {
 }
 .schedule-event-desc { font-size: 0.85rem; color: var(--ink); margin-top: 6px; }
 
+/* ── REGISTRATION GATING ── */
+.reg-closed .reg-gated { display: none !important; }
+
 /* ── ADMIN SETTINGS ── */
 .settings-intro { margin-bottom: 32px; }
+.reg-master-wrap {
+  border: 2px solid var(--navy); border-radius: 4px;
+  padding: 20px 24px; margin-bottom: 32px; max-width: 640px;
+}
+.reg-master-wrap .f-row--check { padding-top: 0; }
+.reg-master-wrap label { font-size: 0.9rem; font-family: 'Oswald', sans-serif; font-weight: 600; color: var(--navy); letter-spacing: 0.04em; text-transform: none; }
+.reg-master-wrap input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--navy); }
+.reg-master-note { font-size: 0.82rem; color: var(--muted); margin-top: 10px; margin-bottom: 0; }
 .reg-admin-row {
   border: 1px solid var(--rule); border-radius: 4px;
   padding: 24px; max-width: 640px;

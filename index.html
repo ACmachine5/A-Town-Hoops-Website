@@ -34,7 +34,7 @@
       <li><a href="#" onclick="showPage('trophy');  return false;" id="nav-trophy"                    >Trophy Case</a></li>
       <li><a href="#" onclick="showPage('gallery'); return false;" id="nav-gallery"                   >Gallery</a></li>
       <li><a href="#" onclick="showPage('contact'); return false;" id="nav-contact"                   >Contact</a></li>
-      <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" class="nav-register">Register</a></li>
+      <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="nav-register reg-gated">Register</a></li>
     </ul>
 
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
@@ -64,7 +64,7 @@
         </p>
         <div class="hero-ctas">
           <a href="#" class="btn-solid" onclick="showPage('about'); return false;">Learn About Us</a>
-          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" class="btn-ghost">Register for Tryouts</a>
+          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-ghost reg-gated">Register for Tryouts</a>
         </div>
       </div>
 
@@ -146,7 +146,7 @@
       <h2>Ready to Join?</h2>
       <p>Tryouts open for boys and girls programs. Register before you come out.</p>
       <div class="cta-band-btns">
-        <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" class="btn-gold">Register for Tryouts</a>
+        <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="btn-gold reg-gated">Register for Tryouts</a>
         <a href="#" class="btn-ghost-lt" onclick="showPage('contact'); return false;">Ask a Question</a>
       </div>
     </div>
@@ -241,9 +241,9 @@
         <h2 class="display teams-panel-heading">A-Town Boys<br>25–26.</h2>
         <p class="lead">Competitive AAU and Wesco play across all grade levels.</p>
         <div id="boys-cards" class="team-cards"><p class="trophy-state">Loading…</p></div>
-        <div class="team-note">
+        <div class="team-note reg-gated">
           <strong>Tryout Registration:</strong> Complete the form before attending tryouts.
-          &nbsp;<a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank">Register here →</a>
+          &nbsp;<a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener">Register here →</a>
         </div>
       </div><!-- /panel-boys -->
 
@@ -253,10 +253,10 @@
         <h2 class="display teams-panel-heading">A-Town Girls<br>25–26.</h2>
         <p class="lead">A dedicated girls program with experienced coaching and competitive league play.</p>
         <div id="girls-cards" class="team-cards"><p class="trophy-state">Loading…</p></div>
-        <div class="team-note">
+        <div class="team-note reg-gated">
           <strong>Girls Program Info:</strong> For tryout details,
           <a href="#" onclick="showPage('contact'); return false;">contact us</a> or
-          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank">fill out the pre-tryout form →</a>
+          <a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener">fill out the pre-tryout form →</a>
         </div>
       </div><!-- /panel-girls -->
 
@@ -645,13 +645,15 @@
         <div class="content-section">
           <div class="eyebrow">Settings</div>
           <h2 class="display admin-section-heading">Registration Status.</h2>
-          <p class="lead settings-intro">Toggle tryout registration open or closed. When open, a banner appears on the home page with a Register link.</p>
-          <div class="reg-admin-row">
-            <div class="reg-admin-label">Boys Program</div>
+          <div class="reg-master-wrap">
             <div class="f-row f-row--check">
-              <label for="reg-boys-open">Registration Open</label>
-              <input type="checkbox" id="reg-boys-open" />
+              <label for="reg-master-open">Registration Open — Boys &amp; Girls</label>
+              <input type="checkbox" id="reg-master-open" onchange="saveMasterToggle()" />
             </div>
+            <p class="reg-master-note">Flipping this shows or hides all Register buttons across the site and the tryout info section on the home page.</p>
+          </div>
+          <div class="reg-admin-row">
+            <div class="reg-admin-label">Boys Program — Tryout Info</div>
             <div class="admin-two-col">
               <div class="f-row"><label for="reg-boys-grades">Grade Range <span class="label-optional">(optional)</span></label><input type="text" id="reg-boys-grades" placeholder="e.g. 3rd–8th Grade" /></div>
               <div class="f-row"><label for="reg-boys-date">Tryout Date</label><input type="text" id="reg-boys-date" placeholder="e.g. March 15, 2026" /></div>
@@ -668,11 +670,7 @@
           </div>
           <div class="reg-admin-divider"></div>
           <div class="reg-admin-row">
-            <div class="reg-admin-label">Girls Program</div>
-            <div class="f-row f-row--check">
-              <label for="reg-girls-open">Registration Open</label>
-              <input type="checkbox" id="reg-girls-open" />
-            </div>
+            <div class="reg-admin-label">Girls Program — Tryout Info</div>
             <div class="admin-two-col">
               <div class="f-row"><label for="reg-girls-grades">Grade Range <span class="label-optional">(optional)</span></label><input type="text" id="reg-girls-grades" placeholder="e.g. 3rd–8th Grade" /></div>
               <div class="f-row"><label for="reg-girls-date">Tryout Date</label><input type="text" id="reg-girls-date" placeholder="e.g. March 22, 2026" /></div>

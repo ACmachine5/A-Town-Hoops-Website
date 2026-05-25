@@ -116,15 +116,22 @@ async function loadUpcomingEvents() {
   }).join('');
 }
 
+/* ── REGISTRATION GATING ── */
+function applyRegistrationGating(isOpen) {
+  document.body.classList.toggle('reg-closed', !isOpen);
+}
+
 /* ── REGISTRATION STATUS ── */
 async function loadRegistrationStatus() {
   const { data } = await db.from('registration_status').select('*');
   if (!data) return;
+  const anyOpen = data.some(r => r.is_open);
+  applyRegistrationGating(anyOpen);
   const section = document.getElementById('home-reg-section');
   const cards   = document.getElementById('home-reg-cards');
-  const open    = data.filter(r => r.is_open);
-  if (!open.length) { section.classList.add('section-hidden'); return; }
+  if (!anyOpen) { section.classList.add('section-hidden'); return; }
   section.classList.remove('section-hidden');
+  const open = data.filter(r => r.is_open);
   cards.innerHTML = open.map(r => {
     const label = r.program === 'boys' ? 'Boys' : 'Girls';
     return `
@@ -626,10 +633,11 @@ function renderAdminList(containerId, section, data, rowContentFn, table, reload
 async function loadAdminSettings() {
   const { data } = await db.from('registration_status').select('*');
   if (!data) return;
+  const anyOpen = data.some(r => r.is_open);
+  document.getElementById('reg-master-open').checked = anyOpen;
   ['boys', 'girls'].forEach(p => {
     const row = data.find(r => r.program === p);
     if (!row) return;
-    document.getElementById(`reg-${p}-open`).checked  = row.is_open;
     document.getElementById(`reg-${p}-grades`).value   = row.grades       || '';
     document.getElementById(`reg-${p}-date`).value     = row.tryout_date  || '';
     document.getElementById(`reg-${p}-time`).value     = row.tryout_time  || '';
@@ -639,12 +647,19 @@ async function loadAdminSettings() {
   });
 }
 
+async function saveMasterToggle() {
+  const isOpen = document.getElementById('reg-master-open').checked;
+  const { error } = await db.from('registration_status').update({ is_open: isOpen }).in('program', ['boys', 'girls']);
+  if (error) { alert('Error: ' + error.message); return; }
+  applyRegistrationGating(isOpen);
+  showToast(isOpen ? '✓ Registration is now open.' : '✓ Registration is now closed.');
+}
+
 async function saveRegistrationStatus(program) {
   const p   = program;
   const btn = document.getElementById(`reg-${p}-btn`);
   btn.textContent = 'Saving…'; btn.disabled = true;
   const payload = {
-    is_open:     document.getElementById(`reg-${p}-open`).checked,
     grades:      get(`reg-${p}-grades`)   || null,
     tryout_date: get(`reg-${p}-date`)     || null,
     tryout_time: get(`reg-${p}-time`)     || null,
