@@ -32,7 +32,6 @@
       <li><a href="#" onclick="showPage('teams');    return false;" id="nav-teams"                     >Teams</a></li>
       <li><a href="#" onclick="showPage('schedule');return false;" id="nav-schedule"                  >Schedule</a></li>
       <li><a href="#" onclick="showPage('trophy');  return false;" id="nav-trophy"                    >Trophy Case</a></li>
-      <li><a href="#" onclick="showPage('gallery'); return false;" id="nav-gallery"                   >Gallery</a></li>
       <li><a href="#" onclick="showPage('contact'); return false;" id="nav-contact"                   >Contact</a></li>
       <li><a href="https://forms.gle/YikHHK5KCYW21Gwn7" target="_blank" rel="noopener" class="nav-register reg-gated reg-form-link">Register</a></li>
     </ul>
@@ -299,59 +298,6 @@
 
 
   <!-- ══════════════════════════════════════════
-       GALLERY PAGE
-  ══════════════════════════════════════════ -->
-  <div id="page-gallery" class="page">
-
-    <div class="page-header">
-      <div class="eyebrow">A-Town in Action</div>
-      <h1 class="display">Gallery.</h1>
-      <p class="lead" style="margin-top: 16px;">Moments from the court — tournaments, practices, and championship celebrations.</p>
-    </div>
-
-    <!-- Upload Form -->
-    <div class="content-section sand">
-      <div class="gallery-upload-card">
-        <div class="gallery-upload-icon">📸</div>
-        <div class="gallery-upload-heading">Share a Game Day Photo</div>
-        <p class="gallery-upload-sub">Upload your favorite court moments. Photos are reviewed before going live — keep it fun and appropriate!</p>
-        <div class="gu-file-area" id="gu-file-area" onclick="document.getElementById('gu-file').click()">
-          <input type="file" id="gu-file" accept="image/*" style="display:none" onchange="previewUpload(this)" />
-          <img id="gu-preview" class="gu-preview" alt="Preview" style="display:none" />
-          <div id="gu-placeholder">
-            <span class="gu-file-icon">🖼️</span>
-            <span class="gu-file-text">Tap to select a photo</span>
-          </div>
-        </div>
-        <div class="f-row"><label>Your Name</label><input type="text" id="gu-name" placeholder="First name or parent / player name" /></div>
-        <div class="f-row"><label>Caption <span class="label-optional">(optional)</span></label><input type="text" id="gu-caption" placeholder="e.g. 7th grade championship game!" /></div>
-        <button type="button" id="gu-submit" class="gallery-upload-submit" onclick="submitGalleryUpload()">Share Photo →</button>
-      </div>
-    </div>
-
-    <!-- Photo Feed -->
-    <div class="content-section">
-      <div class="eyebrow">Community Photos</div>
-      <h2 class="display">From the Court.</h2>
-      <div id="gallery-feed" class="gallery-feed"></div>
-      <p class="gallery-note" id="gallery-empty-note" style="display:none">
-        No photos yet — be the first to share one!
-      </p>
-    </div>
-
-    <!-- Social Feed -->
-    <div id="gallery-social-section" class="content-section sand section-hidden">
-      <div class="eyebrow">Follow Along</div>
-      <h2 class="display">On Social.</h2>
-      <p class="lead" style="margin-bottom: 16px;">See what families are sharing from the court.</p>
-      <div id="gallery-social-embed"></div>
-      <div id="gallery-social-links" class="social-follow-links"></div>
-    </div>
-
-  </div><!-- /page-gallery -->
-
-
-  <!-- ══════════════════════════════════════════
        SCHEDULE PAGE
   ══════════════════════════════════════════ -->
   <div id="page-schedule" class="page">
@@ -475,7 +421,6 @@
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('board', this)">Board</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('teams', this)">Teams</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('trophy', this)">Trophy Case</button>
-        <button type="button" class="admin-tab-btn" onclick="switchAdminTab('gallery', this)">Gallery</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('faq', this)">FAQ</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('sponsors', this)">Sponsors</button>
         <button type="button" class="admin-tab-btn" onclick="switchAdminTab('settings', this)">Settings</button>
@@ -627,36 +572,6 @@
           <div class="eyebrow">Upcoming</div>
           <h2 class="display admin-section-heading">Events.</h2>
           <div id="admin-events-list" class="admin-posts-list"></div>
-        </div>
-      </div>
-
-      <!-- ── GALLERY ── -->
-      <div id="atab-gallery" class="admin-panel">
-        <!-- Pending Review (shown when submissions exist) -->
-        <div class="content-section admin-gallery-pending-section" id="admin-gallery-pending-wrap" style="display:none">
-          <div class="eyebrow">Needs Approval</div>
-          <h2 class="display admin-section-heading">Pending. <span class="admin-pending-badge" id="admin-pending-count"></span></h2>
-          <div id="admin-gallery-pending-list" class="admin-posts-list"></div>
-        </div>
-        <!-- Admin add photo -->
-        <div class="content-section">
-          <div class="eyebrow">Gallery</div>
-          <h2 class="display admin-section-heading">Add Photo.</h2>
-          <div class="admin-form">
-            <div class="f-row"><label for="gl-url">Photo URL</label><input type="url" id="gl-url" placeholder="https://…" /></div>
-            <div class="f-row"><label for="gl-caption">Caption <span class="label-optional">(optional)</span></label><input type="text" id="gl-caption" placeholder="e.g. 7th Grade Wesco Champions" /></div>
-            <div class="admin-two-col">
-              <div class="f-row"><label for="gl-team">Team <span class="label-optional">(optional)</span></label><input type="text" id="gl-team" placeholder="e.g. Boys 7th Grade" /></div>
-              <div class="f-row"><label for="gl-date">Date <span class="label-optional">(optional)</span></label><input type="date" id="gl-date" /></div>
-            </div>
-            <button type="button" id="gl-cancel" class="admin-cancel admin-cancel--hidden" onclick="cancelEdit('gallery')">← Cancel Edit</button><button type="button" class="f-submit" id="gl-submit" onclick="submitGalleryItem()">Add Photo →</button>
-          </div>
-        </div>
-        <!-- Approved photos -->
-        <div class="content-section cream">
-          <div class="eyebrow">Published</div>
-          <h2 class="display admin-section-heading">Photos.</h2>
-          <div id="admin-gallery-list" class="admin-posts-list"></div>
         </div>
       </div>
 
@@ -832,7 +747,6 @@
           <li><a href="#" onclick="showPage('about');   return false;">About</a></li>
           <li><a href="#" onclick="showPage('teams');   return false;">Teams</a></li>
           <li><a href="#" onclick="showPage('trophy');  return false;">Trophy Case</a></li>
-          <li><a href="#" onclick="showPage('gallery'); return false;">Gallery</a></li>
           <li><a href="#" onclick="showPage('contact'); return false;">Contact</a></li>
         </ul>
       </div>

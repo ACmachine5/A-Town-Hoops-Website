@@ -42,7 +42,7 @@ function quillHTML(q) {
 
 const SUBMIT_LABELS = {
   trophy: 'Publish Entry →', announcements: 'Publish →', teams: 'Save Team →',
-  events: 'Add Event →',    gallery: 'Add Photo →',      board: 'Add Member →',
+  events: 'Add Event →',    board: 'Add Member →',
   faq: 'Add Question →',    sponsors: 'Add Sponsor →',
 };
 
@@ -113,7 +113,6 @@ function showPage(id) {
     },
     trophy:   () => { document.getElementById('trophy-list').innerHTML = '<p class="trophy-state">Loading…</p>'; },
     schedule: () => { document.getElementById('schedule-list').innerHTML = '<p class="trophy-state">Loading…</p>'; },
-    gallery:  () => { document.getElementById('gallery-feed').innerHTML = ''; },
     about:    () => { document.getElementById('board-grid').innerHTML = '<p class="trophy-state">Loading…</p>'; },
   };
   if (resets[id]) resets[id]();
@@ -123,7 +122,6 @@ function showPage(id) {
     trophy:   loadTrophyPosts,
     teams:    () => loadTeams('boys'),
     schedule: loadSchedulePage,
-    gallery:  loadGallery,
     about:    loadBoardMembers,
     admin:    showAdminPage,
   };
@@ -409,122 +407,6 @@ async function loadTeams(gender) {
   }).join('');
 }
 
-/* ── GALLERY (public) ── */
-async function loadGallery() {
-  const feed      = document.getElementById('gallery-feed');
-  const emptyNote = document.getElementById('gallery-empty-note');
-
-  const { data, error } = await db.from('gallery_items').select('*')
-    .eq('is_approved', true).order('created_at', { ascending: false });
-
-  if (error || !data || !data.length) {
-    feed.innerHTML = '';
-    emptyNote.style.display = 'block';
-  } else {
-    emptyNote.style.display = 'none';
-    feed.innerHTML = data.map(item => `
-      <div class="gallery-feed-card">
-        <div class="gallery-feed-img-wrap">
-          <img src="${item.photo_url}" alt="${item.caption || 'A-Town Hoops'}" loading="lazy" class="gallery-feed-img" />
-        </div>
-        ${item.caption || item.submitted_by ? `
-        <div class="gallery-feed-body">
-          ${item.caption ? `<div class="gallery-feed-caption">${item.caption}</div>` : ''}
-          ${item.submitted_by ? `<div class="gallery-feed-meta">📸 ${item.submitted_by}</div>` : ''}
-        </div>` : ''}
-      </div>`).join('');
-  }
-  renderGallerySocial();
-}
-
-/* Parent upload form */
-function previewUpload(input) {
-  const file        = input.files[0];
-  const area        = document.getElementById('gu-file-area');
-  const preview     = document.getElementById('gu-preview');
-  const placeholder = document.getElementById('gu-placeholder');
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      preview.src = e.target.result;
-      preview.style.display = 'block';
-      placeholder.style.display = 'none';
-      area.classList.add('has-file');
-    };
-    reader.readAsDataURL(file);
-  } else {
-    preview.style.display = 'none';
-    placeholder.style.display = 'block';
-    area.classList.remove('has-file');
-  }
-}
-
-async function submitGalleryUpload() {
-  const fileInput = document.getElementById('gu-file');
-  const file      = fileInput.files[0];
-  const name      = get('gu-name');
-  const caption   = get('gu-caption');
-
-  if (!file)  { alert('Please select a photo first.'); return; }
-  if (!name)  { alert('Please enter your name.'); return; }
-  if (!file.type.startsWith('image/')) { alert('Please select an image file (JPG, PNG, etc.).'); return; }
-  if (file.size > 15 * 1024 * 1024)   { alert('Photo must be under 15 MB.'); return; }
-
-  const btn = document.getElementById('gu-submit');
-  btn.textContent = 'Uploading…'; btn.disabled = true;
-
-  const ext      = (file.name.split('.').pop() || 'jpg').toLowerCase();
-  const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 8)}.${ext}`;
-
-  const { error: uploadError } = await db.storage.from('gallery').upload(filename, file, {
-    cacheControl: '3600', contentType: file.type,
-  });
-
-  if (uploadError) {
-    btn.textContent = 'Share Photo →'; btn.disabled = false;
-    alert('Upload failed: ' + uploadError.message);
-    return;
-  }
-
-  const { data: { publicUrl } } = db.storage.from('gallery').getPublicUrl(filename);
-
-  const { error: insertError } = await db.from('gallery_items').insert({
-    photo_url: publicUrl, caption: caption || null,
-    submitted_by: name, is_approved: false, is_admin_upload: false,
-  });
-
-  btn.textContent = 'Share Photo →'; btn.disabled = false;
-
-  if (insertError) {
-    await db.storage.from('gallery').remove([filename]);
-    alert('Error saving photo: ' + insertError.message); return;
-  }
-
-  fileInput.value = '';
-  document.getElementById('gu-name').value    = '';
-  document.getElementById('gu-caption').value = '';
-  document.getElementById('gu-preview').style.display     = 'none';
-  document.getElementById('gu-placeholder').style.display = 'block';
-  document.getElementById('gu-file-area').classList.remove('has-file');
-
-  showToast('✓ Photo submitted! It will appear after review — thank you!');
-}
-
-function renderGallerySocial() {
-  const section  = document.getElementById('gallery-social-section');
-  const embedEl  = document.getElementById('gallery-social-embed');
-  const linksEl  = document.getElementById('gallery-social-links');
-  const hasEmbed = !!_settings.socialEmbed;
-  const hasLinks = _settings.instagramUrl || _settings.facebookUrl;
-  if (!hasEmbed && !hasLinks) { section.classList.add('section-hidden'); return; }
-  section.classList.remove('section-hidden');
-  embedEl.innerHTML = _settings.socialEmbed || '';
-  linksEl.innerHTML = [
-    _settings.instagramUrl ? `<a href="${_settings.instagramUrl}" target="_blank" rel="noopener" class="social-follow-btn social-follow-btn--instagram">📸 Follow on Instagram</a>` : '',
-    _settings.facebookUrl  ? `<a href="${_settings.facebookUrl}"  target="_blank" rel="noopener" class="social-follow-btn social-follow-btn--facebook">👍 Follow on Facebook</a>`  : '',
-  ].join('');
-}
-
 /* ── BOARD MEMBERS (public) ── */
 async function loadBoardMembers() {
   const container = document.getElementById('board-grid');
@@ -576,7 +458,7 @@ function switchAdminTab(tab, btn) {
   btn.classList.add('active');
   const loaders = {
     trophy: loadAdminPosts, announcements: loadAdminAnnouncements, teams: loadAdminTeams,
-    events: loadAdminEvents, gallery: loadAdminGallery, board: loadAdminBoard,
+    events: loadAdminEvents, board: loadAdminBoard,
     faq: loadAdminFAQs, sponsors: loadAdminSponsors, settings: loadAdminSettings,
   };
   if (loaders[tab]) loaders[tab]();
@@ -611,10 +493,6 @@ function startEdit(section, id) {
       set('ev-location', item.location || ''); set('ev-team', item.team || '');
       quillEvent.clipboard.dangerouslyPasteHTML(item.description || '');
     },
-    gallery: () => {
-      set('gl-url', item.photo_url); set('gl-caption', item.caption || '');
-      set('gl-team', item.team || ''); set('gl-date', item.event_date || '');
-    },
     board: () => {
       set('bm-role', item.role); set('bm-name', item.name); set('bm-photo', item.photo_url || '');
     },
@@ -630,7 +508,7 @@ function startEdit(section, id) {
 
   if (populators[section]) populators[section]();
 
-  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm', faq: 'fq', sponsors: 'sp' };
+  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', board: 'bm', faq: 'fq', sponsors: 'sp' };
   const p = prefix[section];
   document.getElementById(p + '-submit').textContent = 'Update →';
   document.getElementById(p + '-cancel').classList.remove('admin-cancel--hidden');
@@ -645,14 +523,13 @@ function cancelEdit(section) {
     announcements: () => { clearFields(['an-title','an-date','an-expires']); document.getElementById('an-published').checked = true; quillAnnouncements.setText(''); },
     teams:         () => clearFields(['tm-coach','tm-league','tm-season'], ['tm-grade','tm-gender']),
     events:        () => { clearFields(['ev-title','ev-date','ev-end-date','ev-time','ev-location','ev-team'], ['ev-type']); quillEvent.setText(''); },
-    gallery:       () => clearFields(['gl-url','gl-caption','gl-team','gl-date']),
     board:         () => clearFields(['bm-role','bm-name','bm-photo']),
     faq:           () => { clearFields(['fq-question']); document.getElementById('fq-answer').value = ''; },
     sponsors:      () => clearFields(['sp-name','sp-logo','sp-url'], ['sp-tier']),
   };
   if (clearers[section]) clearers[section]();
 
-  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', gallery: 'gl', board: 'bm', faq: 'fq', sponsors: 'sp' };
+  const prefix = { trophy: 'ap', announcements: 'an', teams: 'tm', events: 'ev', board: 'bm', faq: 'fq', sponsors: 'sp' };
   const p = prefix[section];
   document.getElementById(p + '-submit').textContent = SUBMIT_LABELS[section];
   document.getElementById(p + '-cancel').classList.add('admin-cancel--hidden');
@@ -791,85 +668,6 @@ async function loadAdminEvents() {
   renderAdminList('admin-events-list', 'events', data,
     e => `<span class="admin-post-date">${e.event_date}</span><span class="admin-post-title-text">${e.title}</span><span class="admin-post-team">${e.event_type}${e.team ? ' · ' + e.team : ''}</span>`,
     'events', loadAdminEvents);
-}
-
-/* ── ADMIN: GALLERY ── */
-async function submitGalleryItem() {
-  const payload = {
-    photo_url: convertDriveUrl(get('gl-url')), caption: get('gl-caption') || null,
-    team: get('gl-team') || null, event_date: get('gl-date') || null,
-    is_approved: true, is_admin_upload: true,
-  };
-  if (!payload.photo_url) { alert('Photo URL is required.'); return; }
-  await adminSave('gallery', 'gallery_items', payload, 'gl-submit', 'Add Photo →', loadAdminGallery);
-}
-
-async function loadAdminGallery() {
-  const { data } = await db.from('gallery_items').select('*').order('created_at', { ascending: false });
-  const all      = data || [];
-  const pending  = all.filter(g => !g.is_approved);
-  const approved = all.filter(g =>  g.is_approved);
-
-  const pendingWrap  = document.getElementById('admin-gallery-pending-wrap');
-  const pendingList  = document.getElementById('admin-gallery-pending-list');
-  const pendingCount = document.getElementById('admin-pending-count');
-
-  if (pending.length) {
-    pendingWrap.style.display = 'block';
-    pendingCount.textContent  = pending.length;
-    pending.forEach(item => { _store[item.id] = item; });
-    pendingList.innerHTML = pending.map(g => `
-      <div class="admin-post-row">
-        <div class="admin-post-info">
-          <span class="admin-post-title-text">${g.caption || 'No caption'}</span>
-          <span class="admin-pending-submitter">Submitted by ${g.submitted_by || 'Unknown'}</span>
-        </div>
-        <div class="admin-row-actions">
-          <a href="${g.photo_url}" target="_blank" rel="noopener" class="admin-edit-btn">View</a>
-          <button type="button" class="admin-approve-btn" onclick="approveGalleryItem('${g.id}')">✓ Approve</button>
-          <button type="button" class="admin-delete-btn" onclick="deleteGalleryItem('${g.id}')">Delete</button>
-        </div>
-      </div>`).join('');
-  } else {
-    pendingWrap.style.display = 'none';
-  }
-
-  const list = document.getElementById('admin-gallery-list');
-  if (!approved.length) { list.innerHTML = '<p class="admin-state">No photos yet.</p>'; return; }
-  approved.forEach(item => { _store[item.id] = item; });
-  list.innerHTML = approved.map(g => `
-    <div class="admin-post-row">
-      <div class="admin-post-info">
-        <span class="admin-post-date">${g.event_date || '—'}</span>
-        <span class="admin-post-title-text">${g.caption || 'No caption'}</span>
-        <span class="admin-post-team">${g.submitted_by ? '👤 ' + g.submitted_by : (g.team || '')}</span>
-      </div>
-      <div class="admin-row-actions">
-        <a href="${g.photo_url}" target="_blank" rel="noopener" class="admin-edit-btn">View</a>
-        <button type="button" class="admin-edit-btn" onclick="startEdit('gallery', '${g.id}')">Edit</button>
-        <button type="button" class="admin-delete-btn" onclick="deleteGalleryItem('${g.id}')">Delete</button>
-      </div>
-    </div>`).join('');
-}
-
-async function approveGalleryItem(id) {
-  const { error } = await db.from('gallery_items').update({ is_approved: true }).eq('id', id);
-  if (error) { alert('Error: ' + error.message); return; }
-  showToast('✓ Photo approved and published.');
-  loadAdminGallery();
-}
-
-async function deleteGalleryItem(id) {
-  if (!confirm('Delete this photo? This cannot be undone.')) return;
-  const item = _store[id];
-  if (item && !item.is_admin_upload && item.photo_url) {
-    const parts = item.photo_url.split('/gallery/');
-    if (parts.length > 1) await db.storage.from('gallery').remove([parts[1]]);
-  }
-  const { error } = await db.from('gallery_items').delete().eq('id', id);
-  if (error) { alert('Error: ' + error.message); return; }
-  showToast('Deleted.');
-  loadAdminGallery();
 }
 
 /* ── ADMIN: BOARD MEMBERS ── */
