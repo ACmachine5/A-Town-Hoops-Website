@@ -468,6 +468,31 @@ h2.display { font-size: clamp(2rem, 4.5vw, 3.8rem); margin-bottom: 16px; }
 }
 .team-note a { color: var(--navy); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
+/* ── AAU CARD ── */
+.aau-card-cta {
+  display: inline-flex; flex-direction: column; gap: 4px;
+  background: var(--navy); color: var(--white);
+  border-radius: 3px; padding: 18px 32px;
+  text-decoration: none; transition: background .2s;
+  margin-bottom: 28px;
+}
+.aau-card-cta:hover { background: var(--navy-2); }
+.aau-card-cta-label {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600; font-size: 1rem; letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.aau-card-cta-sub {
+  font-size: 0.72rem; color: rgba(255,255,255,.55);
+  font-family: 'Oswald', sans-serif; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.aau-card-note {
+  max-width: 560px;
+  font-size: 0.88rem; color: var(--muted); line-height: 1.65;
+  border-left: 3px solid var(--gold); padding-left: 16px;
+}
+.aau-card-note strong { color: var(--navy); }
+
 /* ── TROPHY CASE ── */
 .trophy-season {
   margin-bottom: 72px;
