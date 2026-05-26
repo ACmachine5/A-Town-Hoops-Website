@@ -102,8 +102,21 @@ function showPage(id) {
   const navLink = document.getElementById('nav-' + id);
   if (navLink) navLink.classList.add('active');
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo(0, 0);
   document.getElementById('nav-links').classList.remove('open');
+
+  const resets = {
+    home:     () => {
+      ['home-announcements','home-events','home-reg-cards','home-faq-list','home-sponsors-grid'].forEach(i => {
+        const el = document.getElementById(i); if (el) el.innerHTML = '';
+      });
+    },
+    trophy:   () => { document.getElementById('trophy-list').innerHTML = '<p class="trophy-state">Loading…</p>'; },
+    schedule: () => { document.getElementById('schedule-list').innerHTML = '<p class="trophy-state">Loading…</p>'; },
+    gallery:  () => { document.getElementById('gallery-feed').innerHTML = ''; },
+    about:    () => { document.getElementById('board-grid').innerHTML = '<p class="trophy-state">Loading…</p>'; },
+  };
+  if (resets[id]) resets[id]();
 
   const loaders = {
     home:     loadHomePage,

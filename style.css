@@ -91,7 +91,8 @@ nav {
 
 /* ── PAGE SYSTEM ── */
 .page { display: none; padding-top: 62px; }
-.page.active { display: block; }
+.page.active { display: block; animation: pageFadeIn .18s ease; }
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── SHARED ATOMS ── */
 .eyebrow {
